@@ -5,7 +5,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="#">
+  <a href="https://github.com/iT-Drake/MWOTeamManager">
     <img src="doc/images/Logo.png" alt="Logo" width="80" height="80">
   </a>
   <h3 align="center">MWO Team Manager</h3>
@@ -57,8 +57,8 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[contributors-url]: https://github.com/iT-Drake/MWOTeamManager/graphs/contributors
+[license-url]: https://github.com/iT-Drake/MWOTeamManager/main/LICENSE.txt
 [python-url]: https://www.python.org
 [flask-url]: https://flask.palletsprojects.com/en/3.0.x
 [flask-sqlalchemy-url]: https://flask-sqlalchemy.palletsprojects.com/en/3.1.x
