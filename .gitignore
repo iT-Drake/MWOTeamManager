@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+instance/
+website/__pycache__/
+.env
+Code.bat
