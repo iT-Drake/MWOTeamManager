@@ -5,15 +5,25 @@
     <div class="container-fluid">
         <form class="form-horizontal" method="post">
             <div class="form-group row">
-                <label for="inputName" class="col-2 col-form-label">User name</label>
+                <label for="name" class="col-2 col-form-label">User name</label>
                 <div class="col-4">
                     <input type="text" readonly class="form-control-plaintext" id="name" name="name" value="{{ user.name }}">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">In-game name</label>
+                <label for="in_game_name" class="col-2 col-form-label">In-game name</label>
                 <div class="col-4">
-                    <input type="text" class="form-control" id="inGameName" name="inGameName" value="{{ user.in_game_name }}">
+                    <input type="text" class="form-control" id="in_game_name" name="in_game_name" value="{{ user.in_game_name }}" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="timezone" class="col-2 col-form-label">Time zone</label>
+                <div class="col-4">
+                    <select class="form-control" id="timezone" name="timezone" required>
+                        {% for timezone in timezones %}
+                        <option value="{{ timezone }}" {% if user.timezone == timezone %}selected{% endif %}>{{ timezone }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
@@ -30,7 +40,7 @@
             </div>
             <div class="form-group row">
                 <div class="offset-2 col-4">
-                <button type="submit" class="btn btn-danger">Submit</button>
+                <button type="submit" class="btn btn-success">Save</button>
                 </div>
             </div>
         </form>

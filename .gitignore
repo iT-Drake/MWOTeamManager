@@ -2,5 +2,8 @@
 .vscode/
 instance/
 website/__pycache__/
+migrations/__pycache__/
+migrations/versions/__pycache__/
 .env
 Code.bat
+TODO.md

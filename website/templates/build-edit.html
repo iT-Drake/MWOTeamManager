@@ -4,11 +4,11 @@
 {% block content %}
     {% if build.mech_id != "" %}
     <!-- Modal -->
-    <div class="modal fade" id="Confirmation" tabindex="-1" role="dialog" aria-labelledby="ConfirmationTitle" aria-hidden="true">
+    <div class="modal fade" id="confirmation" tabindex="-1" role="dialog" aria-labelledby="confirmation-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="ConfirmationTitle">Delete build</h5>
+                <h5 class="modal-title" id="confirmation-title">Delete build</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -29,58 +29,95 @@
     <div class="container-fluid">
         <form class="form-horizontal" method="post">
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Mech</label>
+                <label for="mech_id" class="col-2 col-form-label">Mech</label>
                 <div class="col-4">
-                    <select class="form-control" id="Mech" name="Mech">
+                    <select class="form-control" id="mech_id" name="mech_id" required>
                         {% for mech in mechs %}
                             {% if build.mech_id == mech.id %}
-                                <option value="{{ mech.id }}" selected="selected">{{ mech.name }}</option>
+                                <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}" selected="selected">{{ mech.name }}</option>
                             {% else %}
-                                <option value="{{ mech.id }}">{{ mech.name }}</option>
+                                <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}">{{ mech.name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Build name</label>
+                <label for="loadout" class="col-2 col-form-label">Loadout link</label>
                 <div class="col-4">
-                    <input type="text" class="form-control" id="Name" name="Name" value="{{ build.name }}">
+                    <input type="text" class="form-control" id="loadout" name="loadout" value="{{ build.loadout }}" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Loadout link</label>
+                <label for="name" class="col-2 col-form-label">Build name</label>
                 <div class="col-4">
-                    <input type="text" class="form-control" id="Loadout" name="Loadout" value="{{ build.loadout }}">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ build.name }}" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Engine</label>
+                <label for="engine" class="col-2 col-form-label">Engine</label>
                 <div class="col-4">
-                    <input type="text" class="form-control" id="Engine" name="Engine" value="{{ build.engine }}">
+                    <input type="text" class="form-control" id="engine" name="engine" value="{{ build.engine }}">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Build code</label>
+                <label for="code" class="col-2 col-form-label">Build code</label>
                 <div class="col-4">
-                    <input type="text" class="form-control" id="Code" name="Code" value="{{ build.code }}">
+                    <input type="text" class="form-control" id="code" name="code" value="{{ build.code }}">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="inputInGameName" class="col-2 col-form-label">Notes</label>
+                <label for="notes" class="col-2 col-form-label">Notes</label>
                 <div class="col-4">
-                    <textarea class="form-control" id="Notes" name="Notes">{{ build.notes }}</textarea>
+                    <textarea class="form-control" id="notes" name="notes">{{ build.notes }}</textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="for_omni_mechs" class="col-2 col-form-label">For omni mechs</label>
+                <div class="col-1">
+                    <input type="checkbox" class="form-control" id="for_omni_mechs" name="for_omni_mechs" title="Could be used on all omni-mechs" {% if build.for_omni_mechs %}checked{% endif %}>
+                    <input type="hidden" class="form-control" id="for_omni_mechs_false" name="for_omni_mechs">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="approved" class="col-2 col-form-label">Approved build</label>
+                <div class="col-1">
+                    <input type="checkbox" class="form-control" id="approved" name="approved" title="Build could be used in a dropdeck" {% if build.approved %}checked{% endif %}>
+                    <input type="hidden" class="form-control" id="approved_false" name="approved">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="offset-2 col-4">
                     <a href="{{ url_for('views.builds') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
                     {% if build.mech_id != "" %}
-                    <a href="{{ url_for('views.builds') }}" class="btn btn-danger" role="button" data-toggle="modal" data-target="#Confirmation">Delete</a>
+                    <a href="{{ url_for('views.builds') }}" class="btn btn-danger" role="button" data-toggle="modal" data-target="#confirmation">Delete</a>
                     {% endif %}
                     <button type="submit" class="btn btn-success">Save</button>
                 </div>
             </div>
         </form>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            var selectField = $('#mech_id');
+            selectField.change(function(event) {
+                if (event.originalEvent) {
+                    updateCheckboxState($(this));
+                }
+            });
+            updateCheckboxState(selectField);
+        });
+
+        function updateCheckboxState(source) {
+            var selectedValue = source.val();
+            var enableCheckbox = source.find('option[value="' + selectedValue + '"]').attr('data-omni-mech');
+            var checkBox = $('#for_omni_mechs');
+            var disable = enableCheckbox === 'False';
+
+            checkBox.prop('disabled', disable);
+            checkBox.prop('checked', !disable);
+        };
+    </script>
 {% endblock %}

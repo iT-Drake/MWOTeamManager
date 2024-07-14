@@ -1,0 +1,88 @@
+{% extends "template.html" %}
+{% block title %}Event - Edit{% endblock %}
+{% block ContentHeader %}Event{% endblock %}
+{% block content %}
+    {% if event.id != "" %}
+    <!-- Modal -->
+    <div class="modal fade" id="confirmation" tabindex="-1" role="dialog" aria-labelledby="confirmation_title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="confirmation_title">Cancel event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    Canceling event will remove it from the list of active events and clear the list of signed attendees for it.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{{ url_for('views.event_cancel', event_id=event.id) }}" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <div class="container-fluid">
+        <form class="form-horizontal" method="post">
+            <div class="form-group row">
+                <label for="tournament_id" class="col-2 col-form-label">Tournament</label>
+                <div class="col-4">
+                    {% if event.id == "" %}
+                    <select class="form-control" id="tournament_id" name="tournament_id" required>
+                        {% for tournament in tournaments %}
+                            {% if event.tournament_id == tournament.id %}
+                                <option value="{{ tournament.id }}" selected="selected">{{ tournament.name }}</option>
+                            {% else %}
+                                <option value="{{ tournament.id }}">{{ tournament.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                        {% for tournament in tournaments %}
+                            {% if event.tournament_id == tournament.id %}
+                            <input type="text" readonly class="form-control-plaintext" id="Tournament" name="Tournament" value="{{ tournament.name }}">
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="name" class="col-2 col-form-label">Event name</label>
+                <div class="col-4">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ event.name }}" placeholder="Short unique name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="date" class="col-2 col-form-label">Date</label>
+                <div class="col-4">
+                    <input type="datetime-local" class="form-control" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%dT%H:%M') }}" title="UTC date and time" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="duration" class="col-2 col-form-label">Duration</label>
+                <div class="col-4">
+                    <input type="number" class="form-control" id="duration" name="duration" value="{{ event.duration }}" placeholder="Event duration in minutes">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="details" class="col-2 col-form-label">Details</label>
+                <div class="col-4">
+                    <input type="text" class="form-control" id="details" name="details" value="{{ event.details }}" placeholder="Any useful information about this event">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-2 col-4">
+                    <a href="{{ url_for('views.events') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
+                    <button type="submit" class="btn btn-success">Save</button>
+                    {% if event.id != "" %}
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmation">Cancel</button>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

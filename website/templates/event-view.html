@@ -1,0 +1,181 @@
+{% extends "template.html" %}
+{% block title %}Event view{% endblock %}
+{% block head %}
+{% endblock %}
+{% block ContentHeader %}{{ data.event }}{% endblock %}
+{% block ContentHeaderAddition %}
+    <div class="form-group row">
+        <label for="pilot_filter" class="col-form-label col-sm-3">Pilot filter</label>
+        <div class="col-sm-9">
+            <select class="form-control" id="pilot_filter" name="pilot_filter">
+                <option value="" selected>Select pilot</option>
+                {% for key, value in data.users.items() %}
+                <option value="{{ value }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<div class="row">
+    <div class="col-2 d-none d-lg-block">
+        <!-- Assigned pilots -->
+        <div class="card card-success">
+            <div class="card-header border-transparent">
+              <h3 class="card-title">Pilots</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+
+            <div class="card-body p-0">
+                <table class="table">
+                    <thead>
+                        <th>Pilot</th>
+                        <th>Drops</th>
+                    </thead>
+                    <tbody>
+                        {% for key, value in data.stats.pilots.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+        <!-- Used mechs -->
+        <div class="card card-warning">
+            <div class="card-header border-transparent">
+              <h3 class="card-title">Mech stats</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+
+            <div class="card-body p-0">
+                <table class="table">
+                    <thead>
+                        <th>Mech</th>
+                        <th>Used</th>
+                    </thead>
+                    <tbody>
+                        {% for key, value in data.stats.mechs.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <div class="col-10">
+        <!-- Dropdecks -->
+        {% for dropdeck in data.dropdecks %}
+        <div class="card {% if dropdeck.starting_side == 1 %}card-primary{% else %}card-danger{% endif %}">
+            <div class="card-header border-transparent d-flex justify-content-between">
+                <div class="w-100 d-flex justify-content-between">
+                    <span class="text-lg">Drop {{ dropdeck.drop_number }}</span>
+                    <span>|</span>
+                    <span class="text-lg">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</span>
+                    <span>|</span>
+                    <span class="text-lg">{{ dropdeck.name }}</span>
+                    <span>|</span>
+                    <span class="text-lg">{{ dropdeck.map }}</span>
+                    <span>|</span>
+                    <span class="text-lg">{{ dropdeck.tonnage }} tons</span>
+                    <span>|</span>
+                </div>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+    
+            <div class="card-body p-0">
+                <table class="table dropdeck">
+                    <thead>
+                        <th>Pilot</th>
+                        <th>Spawn</th>
+                        <th>Mech</th>
+                        <th>Chassis</th>
+                        <th>Tonnage</th>
+                        <th>Class</th>
+                        <th>Loadout</th>
+                        <th>Notes</th>
+                    </thead>
+                    <tbody>
+                        {% for row in dropdeck.rows %}
+                        <tr>
+                            <td>{{ row.pilot }}</td>
+                            <td>{{ row.spawn }}</td>
+                            <td>{{ row.mech }}</td>
+                            <td>{{ row.chassis }}</td>
+                            <td>{{ row.tonnage }}</td>
+                            <td>{{ row.class }}</td>
+                            <td>
+                                <a href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
+                                {% if row.build.loadout %}
+                                <a class="p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='adminlte/js/clipboard.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            const $pilotFilter = $('#pilot_filter');
+            const $filteredTables = $('table.dropdeck');
+
+            $pilotFilter.on('change', function() {
+                const selectedPilot = $(this).val();
+
+                $filteredTables.each(function() {
+                    const $tbody = $(this).find('tbody');
+                    const $rows = $tbody.find('tr');
+
+                    $rows.each(function() {
+                        const $pilotCell = $(this).find('td:first');
+                        if ($pilotCell.length > 0) { // Check if the Pilot column exists
+                            const pilotText = $pilotCell.text();
+                            if (!selectedPilot || pilotText === selectedPilot) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

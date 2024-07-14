@@ -1,14 +1,14 @@
 {% extends "template.html" %}
 {% block title %}Builds{% endblock %}
 {% block head %}
-<!-- DataTables -->
-<link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 {% endblock %}
 {% block ContentHeader %}Builds{% endblock %}
 {% block content %}
-  <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Build filters">
+  <div class="btn-toolbar justify-content-center pb-2" role="toolbar" aria-label="Build filters">
     <div class="btn-group mr-1" role="group" aria-label="Side">
       <button id="button1" type="button" class="btn btn-secondary" data-column="1" data-value="IS">IS</button>
       <button id="button2" type="button" class="btn btn-secondary" data-column="1" data-value="Clan">Clan</button>
@@ -24,12 +24,16 @@
       <button id="button8" type="button" class="btn btn-secondary" data-column="5" data-value="HERO">HERO</button>
       <button id="button9" type="button" class="btn btn-secondary" data-column="5" data-value="LGD">LGD</button>
     </div>
+    <div class="btn-group mr-2" role="group" aria-label="Type">
+      <button id="button10" type="button" class="btn btn-secondary" data-column="9" data-value="Approved">Approved</button>
+      <button id="button11" type="button" class="btn btn-secondary" data-column="9" data-value="Raw">Raw</button>
+    </div>
   </div>
   <table id="builds" class="table table-sm table-bordered table-striped">
     <thead class="thead-dark">
     <tr>
-        <th>Tons</th>
         <th>Side</th>
+        <th>Tons</th>
         <th>Class</th>
         <th>Chassis</th>
         <th>Variant</th>
@@ -44,8 +48,8 @@
     <tbody>
       {% for build in builds %}
       <tr>
-        <td>{{ build.data.tonnage }}</td>
         <td>{{ build.data.side }}</td>
+        <td>{{ build.data.tonnage }}</td>
         <td>{{ build.data.weight_class }}</td>
         <td>{{ build.data.chassis }}</td>
         <td>{{ build.data.name }}<div style="display:none;">{% if build.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
@@ -56,7 +60,15 @@
           <a class="p-3" href="{{ build.loadout }}" target="_blank">{{ build.name }}</a>
         </td>
         <td>{{ build.notes }}</td>
-        <td>{{ build.updated.strftime("%Y-%m-%d") }}</td>
+        <td>
+          {% if build.approved %}
+          <span class="text-success">{{ build.updated.strftime("%Y-%m-%d") }}</span>
+          <div style="display:none;">Approved</div>
+          {% else %}
+          <span>{{ build.updated.strftime("%Y-%m-%d") }}</span>
+          <div style="display:none;">Raw</div>
+          {% endif %}
+        </td>
         <td><a href="{{ url_for('views.build_edit', build_id=build.id)}}" title="Edit build"><i class="far fa-edit"></i></a></td>
       </tr>
       {% endfor %}
@@ -77,6 +89,7 @@
     $(function () {
       $("#builds").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 100,
+        "order": [[1, 'asc']],
         "buttons": [
           {
             text: "Add",
@@ -132,7 +145,7 @@
                     return;
                   };
 
-                  matchConditions = matchConditions || cellValue === value;
+                  matchConditions = matchConditions || cellValue === value || cellValue.includes(value);
                 });
               } else {
                 // Not applying filter for the group without active filters

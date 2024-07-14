@@ -1,5 +1,5 @@
 import re
-from . import MECH_DATA
+from . import MECH_DATA, MAP_DATA
 import csv
 
 def read_mech_data():
@@ -10,8 +10,18 @@ def read_mech_data():
             mech_data[row['Name']] = row
 
         return mech_data
+    
+def read_map_data():
+    with open(MAP_DATA, newline='') as map_data_file:
+        map_data = {}
+        reader = csv.DictReader(map_data_file)
+        for row in reader:
+            map_data[row['ID']] = row['Name']
+
+        return map_data
 
 mech_data = read_mech_data()
+map_data = read_map_data()
 
 def parse_mechlist(new_mechlist):
     mechlist = dict()
@@ -41,3 +51,6 @@ def parse_mechlist(new_mechlist):
 
 def get_mech_data():
     return mech_data
+
+def get_map_data():
+    return map_data

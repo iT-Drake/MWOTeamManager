@@ -1,8 +1,21 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint
+from flask import render_template
+from flask import request
+from flask import flash
+from flask import redirect
+from flask import url_for
+
+from flask_login import login_user
+from flask_login import login_required
+from flask_login import logout_user
+from flask_login import current_user
+
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+
+from .utility import AllTimezones, UTC, UpdateCurrentTimezone
 from .models import User
-from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from flask_login import login_user, login_required, logout_user, current_user
 
 auth = Blueprint('auth', __name__)
 
@@ -16,7 +29,6 @@ def login():
         user = User.query.filter_by(name=name).first()
         if user:
             if check_password_hash(user.password, password):
-                flash('Logged in successfully!', category='success')
                 login_user(user, remember=remember)
                 return redirect(url_for('views.home'))
             else:
@@ -37,7 +49,8 @@ def logout():
 def profile():
     if request.method == 'POST':
         name = request.form.get('name')
-        in_game_name = request.form.get('inGameName')
+        in_game_name = request.form.get('in_game_name')
+        timezone = request.form.get('timezone')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
@@ -49,6 +62,10 @@ def profile():
             else:
                 user.in_game_name = in_game_name
                 user_settings_changed = True
+
+        if timezone != user.timezone:
+            user.timezone = timezone
+            user_settings_changed = True
         
         if password1:
             if password1 != password2:
@@ -61,16 +78,17 @@ def profile():
         if user_settings_changed:
             db.session.add(user)
             db.session.commit()
-            # login_user(user, remember=True)
+            UpdateCurrentTimezone()
             flash('User settings updated', category='success')
     
-    return render_template('profile.html', user=current_user)
+    return render_template('profile.html', user=current_user, timezones=AllTimezones())
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         name = request.form.get('name')
-        in_game_name = request.form.get('inGameName')
+        in_game_name = request.form.get('in_game_name')
+        timezone = UTC()
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
@@ -86,7 +104,7 @@ def register():
         elif len(password1) < 5:
             flash('Password must be at least 5 characters', category='error')
         else:
-            new_user = User(name=name, in_game_name=in_game_name, password=generate_password_hash(password1))
+            new_user = User(name=name, in_game_name=in_game_name, timezone=timezone, password=generate_password_hash(password1))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)

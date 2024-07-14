@@ -1,0 +1,1 @@
+flask --app website:create_app db migrate

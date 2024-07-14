@@ -33,7 +33,7 @@
             <td>{{ mech.data.tonnage }}</td>
             <td>{{ mech.data.weight_class }}</td>
             <td>{{ mech.data.chassis_type }}<div style="display:none;">{% if mech.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
-            <td>--</td>
+            <td>{{ team_total.get(mech.data.name) }}</td>
           </tr>
           {% endfor %}
         {% endfor %}

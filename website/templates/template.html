@@ -105,41 +105,48 @@
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <a href="{{ url_for('views.mechlist_update') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-file-upload nav-icon text-primary"></i>
                     <p>Update</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="{{ url_for('views.mechlist_search') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-search nav-icon text-danger"></i>
                     <p>Search</p>
                   </a>
                 </li>
               </ul>
             </li>
 
-            <!-- Events -->
-            <li class="nav-item" id="menu_events">
+            <!-- Schedule -->
+            <li class="nav-item" id="menu_schedule">
               <a href="#" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
-                  Events
+                  Schedule
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="{{ url_for('views.calendar') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Calendar</p>
-                  </a>
-                </li>
-                <li class="nav-item">
                   <a href="{{ url_for('views.tournaments') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-trophy nav-icon text-warning"></i>
                     <p>Tournaments</p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="{{ url_for('views.events') }}" class="nav-link">
+                    <i class="fas fa-calendar-check nav-icon text-success"></i>
+                    <p>Events</p>
+                  </a>
+                </li>
+                <!-- Calendar
+                <li class="nav-item">
+                  <a href="{{ url_for('views.calendar') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon text-info"></i>
+                    <p>Calendar</p>
+                  </a>
+                </li> -->
               </ul>
             </li>
 
@@ -201,7 +208,10 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>{% block ContentHeader %}Content header{% endblock %}</h1>
+              <h1>{% block ContentHeader %}{% endblock %}</h1>
+            </div>
+            <div class="col-sm-6">
+              {% block ContentHeaderAddition %}{% endblock %}
             </div>
           </div>
         </div><!-- /.container-fluid -->

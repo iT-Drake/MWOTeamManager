@@ -1,0 +1,384 @@
+{% extends "template.html" %}
+{% block title %}Dropdeck - Edit{% endblock %}
+{% block ContentHeader %}Dropdeck{% endblock %}
+{% block content %}
+    {% if data.id != "" %}
+    <!-- Modal -->
+    <div class="modal fade" id="confirmation" tabindex="-1" role="dialog" aria-labelledby="confirmation_title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="confirmation_title">Mark as ready</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    This will mark dropdeck as ready and it will be shown on event view page. You will not be able to change the event. Mark dropdeck as ready?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="{{ url_for('views.dropdeck_finalize', dropdeck_id=data.id) }}" class="btn btn-primary">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <div class="container-fluid">
+        <form class="form-horizontal" method="post">
+            <!-- Header -->
+            <div class="form-group row">
+                <div class="col-1">
+                    <a href="{{ url_for('views.dropdecks') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
+                </div>
+                <!-- Drop number (drop_number) -->
+                <div class="col-1">
+                    <div class="form-group row">
+                        <label for="drop_number" class="col-form-label col-4">Drop</label>
+                        <div class="col-8">
+                            <input type="number" class="form-control" id="drop_number" name="drop_number" value="{% if data.drop_number %}{{ data.drop_number }}{% else %}1{% endif %}">
+                        </div>
+                    </div>
+                </div>
+                <!-- Team select (starting_side) -->
+                <div class="col-1">
+                    <select class="form-control" id="starting_side" name="starting_side" required>
+                        {% for index in range(1,3) %}
+                        <option value="{{ index }}" {% if index == data.starting_side %}selected{% endif %}>Team {{ index }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Dropdeck name -->
+                <div class="col-2">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ data.name }}" placeholder="Dropdeck name">
+                </div>
+                <!-- Map (map_id) -->
+                <div class="col-2">
+                    <select class="form-control" id="map_id" name="map_id">
+                        <option value="">Select map</option>
+                        {% for map in data.maps %}
+                        <option value="{{ map.id }}" {% if map.id == data.map_id %}selected{% endif %}>{{ map.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Event (event_id) -->
+                <div class="col-2">
+                    <select class="form-control" id="event_id" name="event_id" {% if data.is_finalized %}disabled{% endif %} required>
+                        <option value="">Select event</option>
+                        {% for event in data.events %}
+                        <option value="{{ event.id }}" {% if event.id == data.event_id %}selected{% endif %}>{{ event.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Buttons -->
+                <div class="col-2 btn-group align-self-start">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    {% if data.id != "" and not data.is_finalized %}
+                    <a href="#" class="btn btn-primary" role="button" data-toggle="modal" data-target="#confirmation">Finalize</a>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Table header -->
+            <div class="form-group row">
+                <!-- Pilot -->
+                <label class="col-2 col-form-label">Pilot</label>
+                <!-- Spawn -->
+                <label class="col-1 col-form-label">Spawn</label>
+                <!-- Mech -->
+                <label class="col-1 col-form-label">Mech</label>
+                <!-- Chassis -->
+                <label class="col-1 col-form-label">Chassis</label>
+                <!-- Tonnage -->
+                <label class="col-1 col-form-label" id="column_tonnage">Tonnage</label>
+                <!-- Weight class -->
+                <label class="col-1 col-form-label">Class</label>
+                <!-- Loadout -->
+                <label class="col-2 col-form-label">Loadout</label>
+                <!-- Notes -->
+                <label class="col-3 col-form-label">Notes</label>
+            </div>
+            <!-- Table rows -->
+            {% for row in data.rows %}
+            <div class="form-group row">
+                <!-- Pilot -->
+                <div class="col-2">
+                    <select class="form-control" id="pilot_id" name="pilot_id">
+                        <option value="">Select pilot</option>
+                        {% for user in row.pilots %}
+                            {% if user.id == row.pilot_id %}
+                                <option value="{{ user.id }}" selected>{{ user.in_game_name }}</option>
+                            {% else %}
+                                <option value="{{ user.id }}">{{ user.in_game_name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Spawn -->
+                <div class="col-1">
+                    <select class="form-control" id="spawn" name="spawn">
+                        {% for spawn in data.spawns %}
+                        <option value="{{ spawn }}" {% if spawn == row.spawn %}selected{% endif %}>{{ spawn }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Mech -->
+                <div class="col-1">
+                    <select class="form-control" id="mech_id" name="mech_id">
+                        <option value="">Select mech</option>
+                        {% for mech in row.mechs %}
+                            <option value="{{ mech.id }}" {% if mech.id == row.mech_id %}selected{% endif %}>{{ mech.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Chassis -->
+                <div class="col-1">
+                    <input type="text" readonly class="form-control-plaintext" id="chassis" name="chassis" value="{{ row.chassis }}">
+                </div>
+                <!-- Tonnage -->
+                <div class="col-1">
+                    <input type="text" readonly class="form-control-plaintext" id="tonnage" name="tonnage" value="{{ row.tonnage }}">
+                </div>
+                <!-- Weight class -->
+                <div class="col-1">
+                    <input type="text" readonly class="form-control-plaintext" id="weight_class" name="weight_class" value="{{ row.weight_class }}">
+                </div>
+                <!-- Loadout -->
+                <div class="col-2">
+                    <select class="form-control" id="build_id" name="build_id">
+                        <option value="">Select loadout</option>
+                        {% for key, value in row.loadouts.items() %}
+                            {% if row.build.id ==  key %}
+                            <option value="{{ row.build.id }}" selected>{{ row.build.name }}</option>
+                            {% else %}
+                            <option value="{{ key }}">{{ value }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Notes -->
+                <div class="col-3">
+                    <input type="text" class="form-control" id="notes" name="notes" value="{{ row.notes }}" placeholder="Role or build notes">
+                </div>
+            </div>
+            {% endfor %}
+        </form>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <!-- Page specific scripts -->
+    <script>
+        $(document).ready(function() {
+            $('#event_id').change(function() {
+                var eventId = $(this).val();
+                var baseUrl = "{{ url_for('views.deck_building') }}";
+                var url = baseUrl + '?event_id=' + eventId;
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        // Pilots per drop from tournament settings
+                        var numPilots = response.pilots_number;
+                        // Additional header blocks with the same class
+                        var headerBlocks = 3;
+                        // Pilots data
+                        var pilots = response.pilots;
+                        // Mechs data
+                        var mechs = response.mechs;
+                        
+                        // Update the form rows based on the number of pilots
+                        updateFormRows(numPilots + headerBlocks, pilots, mechs);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error fetching event details");
+                    }
+                });
+            });
+            
+            $('.form-group.row').each(function(index, element) {
+                assignPilotIdChangeEvent($(element));
+                assignMechIdChangeEvent($(element));
+            });
+
+            updateTonnageLabel();
+        });
+
+        function updateFormRows(numRows, pilotsData, mechsData) {
+            var currentRows = $('.form-group.row').length;
+
+            if (numRows > currentRows) {
+                // Add new rows
+                for (var i = currentRows; i < numRows; i++) {
+                    var pilotOptions = '';
+                    for (var pilotId in pilotsData) {
+                        pilotOptions += `<option value="${pilotId}">${pilotsData[pilotId]}</option>`;
+                    };
+
+                    var mechOptions = '';
+                    for (var mechsId in mechsData) {
+                        mechOptions += `<option value="${mechsId}">${mechsData[mechsId]}</option>`;
+                    };
+
+                    var newRow = `
+                        <div class="form-group row">
+                            <!-- Pilot -->
+                            <div class="col-2">
+                                <select class="form-control" id="pilot_id" name="pilot_id">
+                                    <option value="">Select pilot</option>
+                                    ` + pilotOptions + `
+                                </select>
+                            </div>
+                            <!-- Spawn -->
+                            <div class="col-1">
+                                <select class="form-control" id="spawn" name="spawn">
+                                    <option value="Alpha">Alpha</option>
+                                    <option value="Bravo">Bravo</option>
+                                    <option value="Charlie">Charlie</option>
+                                </select>
+                            </div>
+                            <!-- Mech -->
+                            <div class="col-1">
+                                <select class="form-control" id="mech_id" name="mech_id">
+                                    <option value="">Select mech</option>
+                                    ` + mechOptions + `
+                                </select>
+                            </div>
+                            <!-- Chassis -->
+                            <div class="col-1">
+                                <input type="text" readonly class="form-control-plaintext" id="chassis" name="chassis" value="">
+                            </div>
+                            <!-- Tonnage -->
+                            <div class="col-1">
+                                <input type="text" readonly class="form-control-plaintext" id="tonnage" name="tonnage" value="">
+                            </div>
+                            <!-- Weight class -->
+                            <div class="col-1">
+                                <input type="text" readonly class="form-control-plaintext" id="weight_class" name="weight_class" value="">
+                            </div>
+                            <!-- Loadout -->
+                            <div class="col-2">
+                                <select class="form-control" id="build_id" name="build_id">
+                                    <option value="">Select loadout</option>
+                                </select>
+                            </div>
+                            <!-- Notes -->
+                            <div class="col-3">
+                                <input type="text" class="form-control" id="notes" name="notes" value="" placeholder="Role or build notes">
+                            </div>
+                        </div>
+                    `;
+                    var newRowObj = $(newRow);
+                    $('.form-group.row:last').after(newRowObj);
+
+                    // Assign onChange method to the newly created pilot_id select element
+                    assignPilotIdChangeEvent(newRowObj);
+
+                    // Assign onChange method to the newly created mech_id select element
+                    assignMechIdChangeEvent(newRowObj);
+                }
+            } else if (numRows < currentRows) {
+                // Remove excess rows
+                $('.form-group.row').slice(numRows).remove();
+            }
+        }
+
+        function assignPilotIdChangeEvent(row) {
+            var rows = row.find('select[name="pilot_id"]');
+            rows.change(function() {
+                var pilotId = $(this).val();
+                var currentRow = $(this).closest('.form-group.row');
+                var url = "{{ url_for('views.deck_building') }}";
+
+                // Make an AJAX request to get the mech options for the selected pilot
+                $.ajax({
+                    url: url + '?pilot_id=' + pilotId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        var mechIdField = currentRow.find('select[name="mech_id"]');
+                        var selectedValue = mechIdField.val();
+                        var mechOptions = '<option value="">Select mech</option>';
+                        
+                        // Populate mech options based on the response data
+                        for (var mechId in data) {
+                            var selectedAttr = (mechId === selectedValue) ? ' selected' : '';
+                            mechOptions += `<option value="${mechId}"${selectedAttr}>${data[mechId]}</option>`;
+                        }
+
+                        // Update the "mech_id" select field within the same row
+                        mechIdField.html(mechOptions);
+                    }
+                });
+            });
+        }
+
+        function assignMechIdChangeEvent(row) {
+            var rows = row.find('select[name="mech_id"]');
+            rows.change(function() {
+                var mechId = $(this).val();
+                var currentRow = $(this).closest('.form-group.row');
+                var url = "{{ url_for('views.deck_building') }}";
+
+                // Make an AJAX request to get the mech options for the selected pilot
+                $.ajax({
+                    url: url + '?mech_id=' + mechId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        var pilotIdField = currentRow.find('select[name="pilot_id"]');
+                        var buildIdField = currentRow.find('select[name="build_id"]');
+                        var chassisField = currentRow.find('input[name="chassis"]');
+                        var tonnageField = currentRow.find('input[name="tonnage"]');
+                        var classField = currentRow.find('input[name="weight_class"]');
+                        
+                        console.log(data.loadouts);
+                        var selectedValue = buildIdField.val();
+                        var options = '<option value="">Select loadout</option>';
+                        for (var buildId in data.loadouts) {
+                            var selectedAttr = (buildId === selectedValue) ? ' selected' : '';
+                            options += `<option value="${buildId}"${selectedAttr}>${data.loadouts[buildId]}</option>`;
+                        }
+                        buildIdField.html(options);
+
+                        var selectedValue = pilotIdField.val();
+                        var options = '<option value="">Select pilot</option>';
+                        for (var pilotId in data.pilots) {
+                            var selectedAttr = (pilotId === selectedValue) ? ' selected' : '';
+                            options += `<option value="${pilotId}"${selectedAttr}>${data.pilots[pilotId]}</option>`;
+                        }
+                        pilotIdField.html(options);
+
+                        if (mechId) {
+                            $(chassisField).val(data.details.chassis);
+                            $(tonnageField).val(data.details.tonnage);
+                            $(classField).val(data.details.class);
+                        } else {
+                            $(chassisField).val("");
+                            $(tonnageField).val("");
+                            $(classField).val("");
+                        }
+
+                        updateTonnageLabel();
+                    }
+                });
+            });
+        }
+        
+        function updateTonnageLabel() {
+            var totalTonnage = 0;
+            $('.form-group.row').each(function() {
+                var tonnageInput = $(this).find('input[name="tonnage"]');
+                var tonnageValue = parseInt(tonnageInput.val());
+                if (!isNaN(tonnageValue)) {
+                    totalTonnage += tonnageValue;
+                }
+            });
+
+            var tonnageLabel = $('#column_tonnage');
+            var updatedLabelText = 'Tonnage (' + totalTonnage + ')';
+            tonnageLabel.text(updatedLabelText);
+        }
+    </script>
+{% endblock %}

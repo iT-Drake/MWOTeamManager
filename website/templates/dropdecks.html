@@ -1,0 +1,69 @@
+{% extends "template.html" %}
+{% block title %}Dropdecks{% endblock %}
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+{% endblock %}
+{% block ContentHeader %}Dropdecks{% endblock %}
+{% block content %}
+  <table id="dropdecks" class="table table-sm table-bordered table-striped">
+    <thead class="thead-dark">
+    <tr>
+        <th>WIP</th>
+        <th>Tournament</th>
+        <th>Event</th>
+        <th>Drop</th>
+        <th>Name</th>
+        <th>Map</th>
+        <th>Team</th>
+        <th>Author</th>
+        <th>#</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for dropdeck in dropdecks %}
+      <tr>
+        <td class="align-middle">{% if not dropdeck.is_finalized %}<i class="far fa-check-square text-success"></i>{% endif %}</td>
+        <td class="align-middle">{{ dropdeck.event.tournament.full_name }}</td>
+        <td class="align-middle">{{ dropdeck.event.name }}</td>
+        <td class="align-middle">{{ dropdeck.drop_number }}</td>
+        <td class="align-middle">{{ dropdeck.name }}</td>
+        <td class="align-middle">{{ dropdeck.map.name }}</td>
+        <td class="align-middle">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</td>
+        <td class="align-middle">{{ dropdeck.author.in_game_name }}</td>
+        <td class="align-middle"><a href="{{ url_for('views.dropdeck_edit', dropdeck_id=dropdeck.id)}}" title="Edit dropdeck"><i class="far fa-edit"></i></a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{% block scripts %}
+  <!-- DataTables  & Plugins -->
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+  
+  <!-- Page specific scripts -->
+  <script>
+    $(function () {
+      $("#dropdecks").DataTable({
+        "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 15,
+        "order": [[0, 'desc']],
+        "buttons": [
+          {
+            text: "Add",
+            className: "btn-success",
+            action: function () {
+              location.assign("{{ url_for('views.dropdeck_add') }}");
+            }
+          }
+        ]
+      }).buttons().container().appendTo('#dropdecks_wrapper .col-md-6:eq(0)');
+    });
+  </script>
+{% endblock %}

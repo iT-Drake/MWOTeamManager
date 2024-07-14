@@ -1,0 +1,128 @@
+{% extends "template.html" %}
+{% block title %}Events{% endblock %}
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header border-transparent">
+    <h3 class="card-title">Active events</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.card-header -->
+
+  <div class="card-body">
+    <table id="events_active" class="table table-bordered table-striped">
+      <thead class="thead-dark">
+      <tr>
+          <th>Tournament</th>
+          <th>Event</th>
+          <th>Date</th>
+          <th>#</th>
+          <th>#</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td class="align-middle">{{ event.tournament.name }}</td>
+          <td class="align-middle">{{ event.name }}</td>
+          <td class="align-middle">{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          {% if event.tournament.is_active %}
+          <td class="align-middle"><a href="{{ url_for('views.event_view', event_id=event.id) }}" class="btn btn-block btn-outline-success">View</a></td>
+          <td class="align-middle"><a href="{{ url_for('views.event_edit', event_id=event.id)}}" title="Edit tournament"><i class="far fa-edit"></i></a></td>
+          {% else %}
+          <td class="align-middle"></td>
+          <td class="align-middle"></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- /.card-body -->
+</div>
+
+  <!-- 
+  <div class="row">
+    <h3>Passed events</h3>
+  </div> -->
+<div class="card">
+  <div class="card-header border-transparent">
+    <h3 class="card-title">Passed events</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.card-header -->
+
+  <div class="card-body">
+    <table id="events_passed" class="table table-bordered table-striped">
+      <thead class="thead-dark">
+      <tr>
+          <th>Tournament</th>
+          <th>Event</th>
+          <th>Date</th>
+          <th>#</th>
+          <th>#</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for event in passed %}
+        <tr>
+          <td class="align-middle">{{ event.tournament.name }}</td>
+          <td class="align-middle">{{ event.name }}</td>
+          <td class="align-middle">{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          {% if event.is_canceled %}
+          <td class="align-middle"></td>
+          <td class="align-middle"><i class="far fa-window-close text-danger" title="Canceled"></i></td>
+          {% else %}
+          <td class="align-middle"><a href="{{ url_for('views.event_view', event_id=event.id) }}" class="btn btn-block btn-outline-success">View</a></td>
+          <td class="align-middle"></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- /.card-body -->
+</div>
+{% endblock %}
+{% block scripts %}
+  <!-- DataTables  & Plugins -->
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+  
+  <!-- Page specific scripts -->
+  <script>
+    $(function () {
+      $("#events_active").DataTable({
+        "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 10,
+        "order": [[2, 'desc']],
+        "buttons": [
+          {
+            text: "Add",
+            className: "btn-success",
+            action: function () {
+              location.assign("{{ url_for('views.event_add') }}");
+            }
+          }
+        ]
+      }).buttons().container().appendTo('#events_active_wrapper .col-md-6:eq(0)');
+
+      $("#events_passed").DataTable({
+        "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 10,
+        "order": [[2, 'desc']]
+      }).buttons().container().appendTo('#events_passed_wrapper .col-md-6:eq(0)');
+    });
+  </script>
+{% endblock %}
