@@ -120,4 +120,52 @@
             checkBox.prop('checked', !disable);
         };
     </script>
+    <script>
+        $(document).ready(function() {
+            $('#loadout').on('change', function() {
+                var url = $(this).val();
+
+                if (!url) {
+                    return;
+                }
+                
+                // Regular expression to validate the URL and capture the last part
+                var urlPattern = /https:\/\/mwo\.nav-alpha\.com\/mechlab\?b=[a-z0-9,_-]+_([a-z0-9-]+)/i;
+                var match = urlPattern.exec(url);
+                
+                if (!match) {
+                    $(document).Toasts('create', {
+                        class: 'bg-danger',
+                        title: 'Error parsing URL',
+                        subtitle: 'Close',
+                        body: 'Provided link is not a valid MechDB link.',
+                        delay: 3000,
+                        autohide: true
+                    })
+                    return;
+                }
+                
+                var mechIdParam = match[1]; // Captured part of the URL
+                
+                var $mechOption = $('#mech_id option').filter(function() {
+                    return $(this).text() === mechIdParam;
+                });
+                
+                if ($mechOption.length) {
+                    // Get the value of the selected option and update the mech_id select field
+                    var mechIdValue = $mechOption.val();
+                    $('#mech_id').val(mechIdValue);
+                } else {
+                    $(document).Toasts('create', {
+                        class: 'bg-danger',
+                        title: 'Mech not found',
+                        subtitle: 'Close',
+                        body: mechId + ' is not the correct mech name.',
+                        delay: 3000,
+                        autohide: true
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

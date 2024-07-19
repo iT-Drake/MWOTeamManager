@@ -7,3 +7,4 @@ migrations/versions/__pycache__/
 .env
 Code.bat
 TODO.md
+tools/connect.bat
