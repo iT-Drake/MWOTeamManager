@@ -5,8 +5,13 @@
 {% block ContentHeader %}{{ data.event }}{% endblock %}
 {% block ContentHeaderAddition %}
     <div class="form-group row">
+        {% if data.map_planner_link %}
+        <div class="col-sm-3 align-middle">
+            <a href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="p-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
+        </div>
+        {% endif %}
         <label for="pilot_filter" class="col-form-label col-sm-3">Pilot filter</label>
-        <div class="col-sm-9">
+        <div class="col-sm-6">
             <select class="form-control" id="pilot_filter" name="pilot_filter">
                 <option value="" selected>Select pilot</option>
                 {% for key, value in data.users.items() %}
@@ -34,7 +39,7 @@
             <!-- /.card-header -->
 
             <div class="card-body p-0">
-                <table class="table">
+                <table class="table table-sm">
                     <thead>
                         <th>Pilot</th>
                         <th>Drops</th>
@@ -66,13 +71,13 @@
             <!-- /.card-header -->
 
             <div class="card-body p-0">
-                <table class="table">
+                <table class="table table-sm">
                     <thead>
                         <th>Mech</th>
                         <th>Used</th>
                     </thead>
                     <tbody>
-                        {% for key, value in data.stats.mechs.items() %}
+                        {% for key, value in data.stats.mechs %}
                         <tr>
                             <td>{{ key }}</td>
                             <td>{{ value }}</td>

@@ -75,6 +75,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="map_planner_link" class="col-2 col-form-label">Map planner</label>
+                <div class="col-4">
+                    <input type="text" class="form-control" id="map_planner_link" name="map_planner_link" value="{% if event.map_planner_link %}{{ event.map_planner_link }}{% endif %}" placeholder="Link to a map planner">
+                </div>
+            </div>
+            <div class="form-group row">
                 <div class="offset-2 col-4">
                     <a href="{{ url_for('views.events') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
                     <button type="submit" class="btn btn-success">Save</button>

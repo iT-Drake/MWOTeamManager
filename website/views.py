@@ -295,13 +295,14 @@ def event_view(event_id):
         dropdecks.append(item)
 
     Sort(dropdecks, 'drop_number')
-
+    
     stats = {
-        "mechs": mechs_used,
+        "mechs": sorted(mechs_used.items(), key=lambda x: x[1], reverse=True),
         "pilots": pilots_assigned
     }
     data = {
         "event": event.name,
+        "map_planner_link": event.map_planner_link if event.map_planner_link else "",
         "stats": stats,
         "dropdecks": dropdecks,
         "users": all_users

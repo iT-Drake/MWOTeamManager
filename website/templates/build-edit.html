@@ -117,7 +117,9 @@
             var disable = enableCheckbox === 'False';
 
             checkBox.prop('disabled', disable);
-            checkBox.prop('checked', !disable);
+            if (disable) {
+                checkBox.prop('checked', !disable);
+            };
         };
     </script>
     <script>
