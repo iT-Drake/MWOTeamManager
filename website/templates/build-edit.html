@@ -154,13 +154,16 @@
                 if ($mechOption.length) {
                     // Get the value of the selected option and update the mech_id select field
                     var mechIdValue = $mechOption.val();
-                    $('#mech_id').val(mechIdValue);
+                    var selectField = $('#mech_id');
+                    
+                    selectField.val(mechIdValue);
+                    updateCheckboxState(selectField);
                 } else {
                     $(document).Toasts('create', {
                         class: 'bg-danger',
                         title: 'Mech not found',
                         subtitle: 'Close',
-                        body: mechId + ' is not the correct mech name.',
+                        body: mechId + ' is not a correct mech name.',
                         delay: 3000,
                         autohide: true
                     });
