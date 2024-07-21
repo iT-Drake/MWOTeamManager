@@ -95,6 +95,7 @@
             <div class="card {% if dropdeck.starting_side == 1 %}card-primary{% else %}card-danger{% endif %}">
                 <div class="card-header border-transparent d-flex justify-content-between">
                     <div class="w-100 d-flex justify-content-between">
+                        <a class="text-dark pt-1" href="{{ url_for('views.dropdeck_edit', dropdeck_id=dropdeck.id)}}" title="Edit dropdeck"><i class="far fa-edit"></i></a>
                         <span class="text-lg">Drop {{ dropdeck.drop_number }}</span>
                         <span>|</span>
                         <span class="text-lg d-none d-lg-block">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</span>

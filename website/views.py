@@ -285,6 +285,7 @@ def event_view(event_id):
             rows.append(item)
         
         item = {
+            "id": dropdeck.id,
             "starting_side": dropdeck.starting_side,
             "name": dropdeck.name,
             "drop_number": dropdeck.drop_number,
