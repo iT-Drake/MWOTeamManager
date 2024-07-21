@@ -29,19 +29,19 @@
       <button id="button11" type="button" class="btn btn-secondary" data-column="9" data-value="Raw">Raw</button>
     </div>
   </div>
-  <table id="builds" class="table table-sm table-bordered table-striped">
-    <thead class="thead-dark">
+  <table id="builds" class="table table-dark table-sm table-bordered table-striped">
+    <thead>
     <tr>
         <th>Side</th>
         <th>Tons</th>
-        <th>Class</th>
-        <th>Chassis</th>
+        <th class="d-none d-lg-table-cell">Class</th>
+        <th class="d-none d-lg-table-cell">Chassis</th>
         <th>Variant</th>
-        <th>Type</th>
-        <th>Engine</th>
+        <th class="d-none d-lg-table-cell">Type</th>
+        <th class="d-none d-lg-table-cell">Engine</th>
         <th>Loadout</th>
-        <th>Notes</th>
-        <th>Modified</th>
+        <th class="d-none d-lg-table-cell">Notes</th>
+        <th class="d-none d-lg-table-cell">Modified</th>
         <th>#</th>
     </tr>
     </thead>
@@ -50,17 +50,17 @@
       <tr>
         <td>{{ build.data.side }}</td>
         <td>{{ build.data.tonnage }}</td>
-        <td>{{ build.data.weight_class }}</td>
-        <td>{{ build.data.chassis }}</td>
+        <td class="d-none d-lg-table-cell">{{ build.data.weight_class }}</td>
+        <td class="d-none d-lg-table-cell">{{ build.data.chassis }}</td>
         <td>{{ build.data.name }}<div style="display:none;">{% if build.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
-        <td>{{ build.data.chassis_type }}</td>
-        <td>{{ build.engine }}</td>
+        <td class="d-none d-lg-table-cell">{{ build.data.chassis_type }}</td>
+        <td class="d-none d-lg-table-cell">{{ build.engine }}</td>
         <td>
           <a href="#" title="Copy build code" data-code="{{ build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
           <a class="p-3" href="{{ build.loadout }}" target="_blank">{{ build.name }}</a>
         </td>
-        <td>{{ build.notes }}</td>
-        <td>
+        <td class="d-none d-lg-table-cell">{{ build.notes }}</td>
+        <td class="d-none d-lg-table-cell">
           {% if build.approved %}
           <span class="text-success">{{ build.updated.strftime("%Y-%m-%d") }}</span>
           <div style="display:none;">Approved</div>
@@ -89,6 +89,7 @@
     $(function () {
       $("#builds").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 100,
+        "columnDefs": [{ orderable: false, targets: [6, 7, 8, 10] }],
         "order": [[1, 'asc'], [3, 'asc'], [4, 'asc']],
         "buttons": [
           {

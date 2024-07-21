@@ -7,7 +7,7 @@
     <div class="form-group row">
         {% if data.map_planner_link %}
         <div class="col-sm-3 align-middle">
-            <a href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="p-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
+            <a href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="pr-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
         </div>
         {% endif %}
         <label for="pilot_filter" class="col-form-label col-sm-3">Pilot filter</label>
@@ -23,135 +23,135 @@
 {% endblock %}
 {% block content %}
 <div class="container-fluid">
-<div class="row">
-    <div class="col-2 d-none d-lg-block">
-        <!-- Assigned pilots -->
-        <div class="card card-success">
-            <div class="card-header border-transparent">
-              <h3 class="card-title">Pilots</h3>
+    <div class="row">
+        <div class="col-lg-2 d-none d-lg-block">
+            <!-- Assigned pilots -->
+            <div class="card card-success">
+                <div class="card-header border-transparent">
+                <h3 class="card-title">Pilots</h3>
 
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-
-            <div class="card-body p-0">
-                <table class="table table-sm">
-                    <thead>
-                        <th>Pilot</th>
-                        <th>Drops</th>
-                    </thead>
-                    <tbody>
-                        {% for key, value in data.stats.pilots.items() %}
-                        <tr>
-                            <td>{{ key }}</td>
-                            <td>{{ value }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-
-        <!-- Used mechs -->
-        <div class="card card-warning">
-            <div class="card-header border-transparent">
-              <h3 class="card-title">Mech stats</h3>
-
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-
-            <div class="card-body p-0">
-                <table class="table table-sm">
-                    <thead>
-                        <th>Mech</th>
-                        <th>Used</th>
-                    </thead>
-                    <tbody>
-                        {% for key, value in data.stats.mechs %}
-                        <tr>
-                            <td>{{ key }}</td>
-                            <td>{{ value }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-    </div>
-    <div class="col-10">
-        <!-- Dropdecks -->
-        {% for dropdeck in data.dropdecks %}
-        <div class="card {% if dropdeck.starting_side == 1 %}card-primary{% else %}card-danger{% endif %}">
-            <div class="card-header border-transparent d-flex justify-content-between">
-                <div class="w-100 d-flex justify-content-between">
-                    <span class="text-lg">Drop {{ dropdeck.drop_number }}</span>
-                    <span>|</span>
-                    <span class="text-lg">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</span>
-                    <span>|</span>
-                    <span class="text-lg">{{ dropdeck.name }}</span>
-                    <span>|</span>
-                    <span class="text-lg">{{ dropdeck.map }}</span>
-                    <span>|</span>
-                    <span class="text-lg">{{ dropdeck.tonnage }} tons</span>
-                    <span>|</span>
-                </div>
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
+                    <i class="fas fa-minus"></i>
                     </button>
                 </div>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body p-0">
+                    <table class="table table-sm">
+                        <thead>
+                            <th>Pilot</th>
+                            <th>Drops</th>
+                        </thead>
+                        <tbody>
+                            {% for key, value in data.stats.pilots.items() %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
             </div>
-            <!-- /.card-header -->
-    
-            <div class="card-body p-0">
-                <table class="table dropdeck">
-                    <thead>
-                        <th>Pilot</th>
-                        <th>Spawn</th>
-                        <th>Mech</th>
-                        <th>Chassis</th>
-                        <th>Tonnage</th>
-                        <th>Class</th>
-                        <th>Loadout</th>
-                        <th>Notes</th>
-                    </thead>
-                    <tbody>
-                        {% for row in dropdeck.rows %}
-                        <tr>
-                            <td>{{ row.pilot }}</td>
-                            <td>{{ row.spawn }}</td>
-                            <td>{{ row.mech }}</td>
-                            <td>{{ row.chassis }}</td>
-                            <td>{{ row.tonnage }}</td>
-                            <td>{{ row.class }}</td>
-                            <td>
-                                <a href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
-                                {% if row.build.loadout %}
-                                <a class="p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
-                                {% endif %}
-                            </td>
-                            <td>{{ row.notes }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+            <!-- Used mechs -->
+            <div class="card card-warning">
+                <div class="card-header border-transparent">
+                <h3 class="card-title">Mech stats</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body p-0">
+                    <table class="table table-sm">
+                        <thead>
+                            <th>Mech</th>
+                            <th>Used</th>
+                        </thead>
+                        <tbody>
+                            {% for key, value in data.stats.mechs %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
             </div>
-            <!-- /.card-body -->
         </div>
-        {% endfor %}
+        <div class="col-12 col-lg-10">
+            <!-- Dropdecks -->
+            {% for dropdeck in data.dropdecks %}
+            <div class="card {% if dropdeck.starting_side == 1 %}card-primary{% else %}card-danger{% endif %}">
+                <div class="card-header border-transparent d-flex justify-content-between">
+                    <div class="w-100 d-flex justify-content-between">
+                        <span class="text-lg">Drop {{ dropdeck.drop_number }}</span>
+                        <span>|</span>
+                        <span class="text-lg d-none d-lg-block">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</span>
+                        <span class="d-none d-lg-block">|</span>
+                        <span class="text-lg d-none d-lg-block">{{ dropdeck.name }}</span>
+                        <span class="d-none d-lg-block">|</span>
+                        <span class="text-lg">{{ dropdeck.map }}</span>
+                        <span>|</span>
+                        <span class="text-lg">{{ dropdeck.tonnage }} tons</span>
+                        <span>|</span>
+                    </div>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+        
+                <div class="card-body p-0">
+                    <table class="table dropdeck">
+                        <thead>
+                            <th>Pilot</th>
+                            <th class="d-none d-lg-table-cell">Spawn</th>
+                            <th>Mech</th>
+                            <th class="d-none d-lg-table-cell">Chassis</th>
+                            <th class="d-none d-lg-table-cell">Tonnage</th>
+                            <th class="d-none d-lg-table-cell">Class</th>
+                            <th>Loadout</th>
+                            <th class="d-none d-lg-table-cell">Notes</th>
+                        </thead>
+                        <tbody>
+                            {% for row in dropdeck.rows %}
+                            <tr>
+                                <td>{{ row.pilot }}</td>
+                                <td class="d-none d-lg-table-cell">{{ row.spawn }}</td>
+                                <td>{{ row.mech }}</td>
+                                <td class="d-none d-lg-table-cell">{{ row.chassis }}</td>
+                                <td class="d-none d-lg-table-cell">{{ row.tonnage }}</td>
+                                <td class="d-none d-lg-table-cell">{{ row.class }}</td>
+                                <td>
+                                    <a href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
+                                    {% if row.build.loadout %}
+                                    <a class="p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
+                                    {% endif %}
+                                </td>
+                                <td class="d-none d-lg-table-cell">{{ row.notes }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
 </div>
 {% endblock %}
 {% block scripts %}

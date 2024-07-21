@@ -9,17 +9,17 @@
 {% block ContentHeader %}Team mechlists{% endblock %}
 {% block content %}
   <div class="container-fluid">
-    <table id="mechs" class="table table-sm table-bordered table-striped">
-      <thead class="thead-dark">
+    <table id="mechs" class="table table-dark table-sm table-bordered table-striped">
+      <thead>
       <tr>
           <th>Pilot</th>
           <th>Mech</th>
-          <th>Chassis</th>
-          <th>Side</th>
+          <th class="d-none d-lg-table-cell">Chassis</th>
+          <th class="d-none d-lg-table-cell">Side</th>
           <th>Tonnage</th>
           <th>Class</th>
-          <th>Type</th>
-          <th>Team total</th>
+          <th class="d-none d-lg-table-cell" title="Define if the mech is hero, legendary or normal">Type</th>
+          <th title="Mechs owned by all registered team members">Total</th>
       </tr>
       </thead>
       <tbody>
@@ -28,11 +28,11 @@
           <tr>
             <td>{{ pilot }}</td>
             <td>{{ mech.data.name }}</td>
-            <td>{{ mech.data.chassis }}</td>
-            <td>{{ mech.data.side }}</td>
+            <td class="d-none d-lg-table-cell">{{ mech.data.chassis }}</td>
+            <td class="d-none d-lg-table-cell">{{ mech.data.side }}</td>
             <td>{{ mech.data.tonnage }}</td>
             <td>{{ mech.data.weight_class }}</td>
-            <td>{{ mech.data.chassis_type }}<div style="display:none;">{% if mech.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
+            <td class="d-none d-lg-table-cell">{{ mech.data.chassis_type }}<div style="display:none;">{% if mech.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
             <td>{{ team_total.get(mech.data.name) }}</td>
           </tr>
           {% endfor %}

@@ -29,8 +29,8 @@
     <div class="container-fluid">
         <form class="form-horizontal" method="post">
             <div class="form-group row">
-                <label for="tournament_id" class="col-2 col-form-label">Tournament</label>
-                <div class="col-4">
+                <label for="tournament_id" class="col-4 col-lg-2 col-form-label">Tournament</label>
+                <div class="col-8 col-lg-4">
                     {% if event.id == "" %}
                     <select class="form-control" id="tournament_id" name="tournament_id" required>
                         {% for tournament in tournaments %}
@@ -44,44 +44,44 @@
                     {% else %}
                         {% for tournament in tournaments %}
                             {% if event.tournament_id == tournament.id %}
-                            <input type="text" readonly class="form-control-plaintext" id="Tournament" name="Tournament" value="{{ tournament.name }}">
+                            <input type="text" class="form-control" id="Tournament" name="Tournament" value="{{ tournament.name }}" readonly>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
                 </div>
             </div>
             <div class="form-group row">
-                <label for="name" class="col-2 col-form-label">Event name</label>
-                <div class="col-4">
+                <label for="name" class="col-4 col-lg-2 col-form-label">Event name</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="name" name="name" value="{{ event.name }}" placeholder="Short unique name" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="date" class="col-2 col-form-label">Date</label>
-                <div class="col-4">
+                <label for="date" class="col-4 col-lg-2 col-form-label">Date</label>
+                <div class="col-8 col-lg-4">
                     <input type="datetime-local" class="form-control" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%dT%H:%M') }}" title="UTC date and time" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="duration" class="col-2 col-form-label">Duration</label>
-                <div class="col-4">
+                <label for="duration" class="col-4 col-lg-2 col-form-label">Duration</label>
+                <div class="col-8 col-lg-4">
                     <input type="number" class="form-control" id="duration" name="duration" value="{{ event.duration }}" placeholder="Event duration in minutes">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="details" class="col-2 col-form-label">Details</label>
-                <div class="col-4">
+                <label for="details" class="col-4 col-lg-2 col-form-label">Details</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="details" name="details" value="{{ event.details }}" placeholder="Any useful information about this event">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="map_planner_link" class="col-2 col-form-label">Map planner</label>
-                <div class="col-4">
+                <label for="map_planner_link" class="col-4 col-lg-2 col-form-label">Map planner</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="map_planner_link" name="map_planner_link" value="{% if event.map_planner_link %}{{ event.map_planner_link }}{% endif %}" placeholder="Link to a map planner">
                 </div>
             </div>
             <div class="form-group row">
-                <div class="offset-2 col-4">
+                <div class="offset-4 offset-lg-2 col-8 col-lg-4">
                     <a href="{{ url_for('views.events') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
                     <button type="submit" class="btn btn-success">Save</button>
                     {% if event.id != "" %}

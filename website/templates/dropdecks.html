@@ -8,17 +8,17 @@
 {% endblock %}
 {% block ContentHeader %}Dropdecks{% endblock %}
 {% block content %}
-  <table id="dropdecks" class="table table-sm table-bordered table-striped">
-    <thead class="thead-dark">
+  <table id="dropdecks" class="table table-dark table-sm table-bordered table-striped">
+    <thead>
     <tr>
         <th>WIP</th>
-        <th>Tournament</th>
+        <th><span class="d-none d-lg-block">Tournament</span></th>
         <th>Event</th>
         <th>Drop</th>
-        <th>Name</th>
-        <th>Map</th>
-        <th>Team</th>
-        <th>Author</th>
+        <th class="d-none d-lg-table-cell">Name</th>
+        <th class="d-none d-lg-table-cell">Map</th>
+        <th class="d-none d-lg-table-cell">Team</th>
+        <th class="d-none d-lg-table-cell">Author</th>
         <th>#</th>
     </tr>
     </thead>
@@ -26,13 +26,13 @@
       {% for dropdeck in dropdecks %}
       <tr>
         <td class="align-middle">{% if not dropdeck.is_finalized %}<i class="far fa-check-square text-success"></i>{% endif %}</td>
-        <td class="align-middle">{{ dropdeck.event.tournament.full_name }}</td>
+        <td class="align-middle">{{ dropdeck.event.tournament.name }}</td>
         <td class="align-middle">{{ dropdeck.event.name }}</td>
         <td class="align-middle">{{ dropdeck.drop_number }}</td>
-        <td class="align-middle">{{ dropdeck.name }}</td>
-        <td class="align-middle">{{ dropdeck.map.name }}</td>
-        <td class="align-middle">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</td>
-        <td class="align-middle">{{ dropdeck.author.in_game_name }}</td>
+        <td class="align-middle d-none d-lg-table-cell">{{ dropdeck.name }}</td>
+        <td class="align-middle d-none d-lg-table-cell">{{ dropdeck.map.name }}</td>
+        <td class="align-middle d-none d-lg-table-cell">{% if dropdeck.starting_side == 1 %}Team 1{% else %}Team 2{% endif %}</td>
+        <td class="align-middle d-none d-lg-table-cell">{{ dropdeck.author.in_game_name }}</td>
         <td class="align-middle"><a href="{{ url_for('views.dropdeck_edit', dropdeck_id=dropdeck.id)}}" title="Edit dropdeck"><i class="far fa-edit"></i></a></td>
       </tr>
       {% endfor %}
@@ -53,6 +53,7 @@
     $(function () {
       $("#dropdecks").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 15,
+        "columnDefs": [{ orderable: false, targets: 8 }],
         "order": [[0, 'desc']],
         "buttons": [
           {

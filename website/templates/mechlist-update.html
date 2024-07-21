@@ -30,15 +30,15 @@
       </div>
 
       <div class="col-md-9">
-        <table id="mechs" class="table table-sm table-bordered table-striped">
-          <thead class="thead-dark">
+        <table id="mechs" class="table table-dark table-sm table-bordered table-striped">
+          <thead>
           <tr>
               <th>Mech</th>
               <th>Chassis</th>
               <th>Side</th>
               <th>Tonnage</th>
               <th>Class</th>
-              <th>Type</th>
+              <th class="d-none d-lg-block" title="Define if the mech is hero, legendary or normal">Type</th>
           </tr>
           </thead>
           <tbody>
@@ -49,7 +49,7 @@
               <td>{{ mech.data.side }}</td>
               <td>{{ mech.data.tonnage }}</td>
               <td>{{ mech.data.weight_class }}</td>
-              <td>{{ mech.data.chassis_type }}<div style="display:none;">{% if mech.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
+              <td class="d-none d-lg-block">{{ mech.data.chassis_type }}<div style="display:none;">{% if mech.data.omni_mech %}Omnimech{% else %}Battlemech{% endif %}</div></td>
             </tr>
             {% endfor %}
           </tbody>
