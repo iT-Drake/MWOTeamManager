@@ -54,7 +54,7 @@
       $("#dropdecks").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 15,
         "columnDefs": [{ orderable: false, targets: 8 }],
-        "order": [[0, 'desc']],
+        "order": [[0, 'desc'], [2, 'asc'], [3, 'asc']],
         "buttons": [
           {
             text: "Add",
