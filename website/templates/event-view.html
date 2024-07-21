@@ -6,8 +6,8 @@
 {% block ContentHeaderAddition %}
     <div class="form-group row">
         {% if data.map_planner_link %}
-        <div class="col-sm-3 align-middle">
-            <a href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="pr-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
+        <div class="col-sm-3 align-middle pt-1">
+            <a class="text-lightblue" href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="pr-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
         </div>
         {% endif %}
         <label for="pilot_filter" class="col-form-label col-sm-3">Pilot filter</label>
@@ -136,9 +136,9 @@
                                 <td class="d-none d-lg-table-cell">{{ row.tonnage }}</td>
                                 <td class="d-none d-lg-table-cell">{{ row.class }}</td>
                                 <td>
-                                    <a href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
+                                    <a class="text-lightblue" href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
                                     {% if row.build.loadout %}
-                                    <a class="p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
+                                    <a class="text-lightblue p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
                                     {% endif %}
                                 </td>
                                 <td class="d-none d-lg-table-cell">{{ row.notes }}</td>

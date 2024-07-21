@@ -8,7 +8,7 @@
 {% endblock %}
 {% block ContentHeader %}Tournaments{% endblock %}
 {% block content %}
-  <table id="tournaments" class="table table-dark table-sm table-bordered table-striped">
+  <table id="tournaments" class="table table-dark table-bordered table-striped">
     <thead>
     <tr>
         <th>Name</th>
@@ -26,7 +26,7 @@
         <td>
             <div class="text-success">Active</div>
         </td>
-        <td><a href="{{ url_for('views.tournament_edit', tournament_id=tournament.id)}}" title="Edit tournament"><i class="far fa-edit"></i></a></td>
+        <td><a class="text-lightblue" href="{{ url_for('views.tournament_edit', tournament_id=tournament.id)}}" title="Edit tournament"><i class="far fa-edit"></i></a></td>
         {% else %}
         <td>Finished</td>
         <td></td>
