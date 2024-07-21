@@ -225,14 +225,14 @@
                     var newRow = `
                         <div class="form-group row">
                             <!-- Pilot -->
-                            <div class="col-2">
+                            <div class="col-6 col-lg-2">
                                 <select class="form-control" id="pilot_id" name="pilot_id">
                                     <option value="">Select pilot</option>
                                     ` + pilotOptions + `
                                 </select>
                             </div>
                             <!-- Spawn -->
-                            <div class="col-1">
+                            <div class="col-2 col-lg-1">
                                 <select class="form-control" id="spawn" name="spawn">
                                     <option value="Alpha">Alpha</option>
                                     <option value="Bravo">Bravo</option>
@@ -240,32 +240,32 @@
                                 </select>
                             </div>
                             <!-- Mech -->
-                            <div class="col-1">
+                            <div class="col-4 col-lg-1">
                                 <select class="form-control" id="mech_id" name="mech_id">
                                     <option value="">Select mech</option>
                                     ` + mechOptions + `
                                 </select>
                             </div>
                             <!-- Chassis -->
-                            <div class="col-1">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell">
                                 <input type="text" readonly class="form-control-plaintext" id="chassis" name="chassis" value="">
                             </div>
                             <!-- Tonnage -->
-                            <div class="col-1">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell">
                                 <input type="text" readonly class="form-control-plaintext" id="tonnage" name="tonnage" value="">
                             </div>
                             <!-- Weight class -->
-                            <div class="col-1">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell">
                                 <input type="text" readonly class="form-control-plaintext" id="weight_class" name="weight_class" value="">
                             </div>
                             <!-- Loadout -->
-                            <div class="col-2">
+                            <div class="col-6 col-lg-2">
                                 <select class="form-control" id="build_id" name="build_id">
                                     <option value="">Select loadout</option>
                                 </select>
                             </div>
                             <!-- Notes -->
-                            <div class="col-3">
+                            <div class="col-6 col-lg-3">
                                 <input type="text" class="form-control" id="notes" name="notes" value="" placeholder="Role or build notes">
                             </div>
                         </div>
