@@ -56,7 +56,7 @@
         <td class="d-none d-lg-table-cell">{{ build.data.chassis_type }}</td>
         <td class="d-none d-lg-table-cell">{{ build.engine }}</td>
         <td>
-          <a class="text-lightblue" href="#" title="Copy build code" data-code="{{ build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
+          <a class="text-lightblue" href="#" title="Copy build code" data-code="{{ build.code }}" onclick="copyCode(this)"><i class="far fa-copy"></i></a>
           <a class="text-lightblue p-3" href="{{ build.loadout }}" target="_blank">{{ build.name }}</a>
         </td>
         <td class="d-none d-lg-table-cell">{{ build.notes }}</td>
@@ -83,7 +83,13 @@
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+
+  <!-- Easy Toasts -->
+  <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
   
+  <!-- Clipboard utility -->
+  <script src="{{ url_for('static', filename='adminlte/js/clipboard.js') }}"></script>
+
   <!-- Page specific scripts -->
   <script>
     $(function () {
@@ -167,24 +173,8 @@
     });
   </script>
   <script>
-    function copyToClipboard(element) {
-      const buildCode = element.dataset.code;
-
-      var textarea = document.createElement("textarea");
-      textarea.value = buildCode;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      
-      $(document).Toasts('create', {
-        class: 'bg-success',
-        title: 'Data copied to clipboard',
-        subtitle: 'Close',
-        body: 'You build code have been copied to a clipboard',
-        delay: 3000,
-        autohide: true
-      })
+    function copyCode(element) {
+      copyToClipboard(element);
     }
   </script>
 {% endblock %}

@@ -72,6 +72,7 @@ For a Linux-based system:
   . .venv/bin/activate
   .venv/bin/pip install -r requirements.txt
   ```
+- If you run into errors related to a `pyppeteer` library, check [this](/doc/pyppeteer.md) document.
 - Run [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/) - Python WSGI server (comes with dependencies, but you can use different one, like Gunicorn):
   ```shell
   waitress-serve --port <specify your port number> --call website:create_app
@@ -176,6 +177,9 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 
 [license-shield]: https://img.shields.io/github/license/iT-Drake/MWOTeamManager.svg?style=for-the-badge
 [license-url]: https://github.com/iT-Drake/MWOTeamManager/blob/main/LICENSE
+
+[version-shield]: https://img.shields.io/badge/Version-0.1-blue?style=flat-square
+[version-url]: https://github.com/iT-Drake/MWOTeamManager
 
 [Python]: https://img.shields.io/badge/Python-blue?style=for-the-badge&logo=Python&logoColor=white
 [python-url]: https://www.python.org

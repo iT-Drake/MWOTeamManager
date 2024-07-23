@@ -13,6 +13,7 @@ from .models import Build, Mech
 from .models import Tournament, Event, Map
 from .models import Dropdeck, DropdeckLine
 from .parser import parse_mechlist
+from .scraper import scrape_url
 from . import db
 
 views = Blueprint('views', __name__)
@@ -519,9 +520,15 @@ def build_add():
             "mech_id": "",
             "name": "",
             "loadout": "",
-            "engine": "",
             "code": "",
             "notes": "",
+            "armor": "",
+            "engine": "",
+            "speed": "",
+            "firepower": "",
+            "dps": "",
+            "heatsinks": "",
+            "dissipation": "",
             "for_omni_mechs": False,
             "approved": False
         }
@@ -644,5 +651,14 @@ def deck_building():
                 result[item.id] = item.name
 
             return result
+
+    return result
+
+@views.route('/build-details')
+def build_details():
+    result = {}
+    url = request.args.get('url')
+    if url:
+        result = scrape_url(url=url, sleep=5)
 
     return result

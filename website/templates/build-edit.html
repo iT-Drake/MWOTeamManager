@@ -27,78 +27,152 @@
 
     <!-- Form -->
     <div class="container-fluid">
-        <form class="form-horizontal" method="post">
-            <div class="form-group row">
-                <label for="mech_id" class="col-4 col-lg-2 col-form-label">Mech</label>
-                <div class="col-8 col-lg-4">
-                    <select class="form-control" id="mech_id" name="mech_id" required>
-                        {% for mech in mechs %}
-                            {% if build.mech_id == mech.id %}
-                                <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}" selected="selected">{{ mech.name }}</option>
-                            {% else %}
-                                <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}">{{ mech.name }}</option>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <form class="form-horizontal" method="post">
+                    <div class="form-group row">
+                        <label for="mech_id" class="col-4 col-lg-3 col-form-label">Mech</label>
+                        <div class="col-8 col-lg-6">
+                            <select class="form-control" id="mech_id" name="mech_id" required>
+                                {% for mech in mechs %}
+                                    {% if build.mech_id == mech.id %}
+                                        <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}" selected="selected">{{ mech.name }}</option>
+                                    {% else %}
+                                        <option value="{{ mech.id }}" data-omni-mech="{{ mech.omni_mech }}">{{ mech.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="loadout" class="col-4 col-lg-3 col-form-label">Loadout link</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="url" class="form-control" id="loadout" name="loadout" value="{{ build.loadout }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="name" class="col-4 col-lg-3 col-form-label">Build name</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="name" name="name" value="{{ build.name }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="code" class="col-4 col-lg-3 col-form-label">Build code</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="code" name="code" value="{{ build.code }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="notes" class="col-4 col-lg-3 col-form-label">Notes</label>
+                        <div class="col-8 col-lg-6">
+                            <textarea class="form-control" id="notes" name="notes">{{ build.notes }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="for_omni_mechs" class="col-4 col-lg-3 col-form-label">For omni mechs</label>
+                        <div class="col-1">
+                            <input type="checkbox" class="form-control" id="for_omni_mechs" name="for_omni_mechs" title="Could be used on all omni-mechs" {% if build.for_omni_mechs %}checked{% endif %}>
+                            <input type="hidden" class="form-control" id="for_omni_mechs_false" name="for_omni_mechs">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="approved" class="col-4 col-lg-3 col-form-label">Approved build</label>
+                        <div class="col-1">
+                            <input type="checkbox" class="form-control" id="approved" name="approved" title="Build could be used in a dropdeck" {% if build.approved %}checked{% endif %}>
+                            <input type="hidden" class="form-control" id="approved_false" name="approved">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="armor" class="col-4 col-lg-3 col-form-label">Armor</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="armor" name="armor" value="{{ build.armor }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="engine" class="col-4 col-lg-3 col-form-label">Engine</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="engine" name="engine" value="{{ build.engine }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="speed" class="col-4 col-lg-3 col-form-label">Speed</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="speed" name="speed" value="{{ build.speed }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="firepower" class="col-4 col-lg-3 col-form-label">Firepower</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="firepower" name="firepower" value="{{ build.firepower }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="dps" class="col-4 col-lg-3 col-form-label">DPS</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="dps" name="dps" value="{{ build.dps }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="heatsinks" class="col-4 col-lg-3 col-form-label">Heat Sinks</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="heatsinks" name="heatsinks" value="{{ build.heatsinks }}">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label for="dissipation" class="col-4 col-lg-3 col-form-label">Dissipation</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="dissipation" name="dissipation" value="{{ build.dissipation }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="offset-4 offset-lg-3 col-8 col-lg-6">
+                            <a href="{{ url_for('views.builds') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
+                            {% if build.mech_id != "" %}
+                            <a href="{{ url_for('views.builds') }}" class="btn btn-danger" role="button" data-toggle="modal" data-target="#confirmation">Delete</a>
                             {% endif %}
-                        {% endfor %}
-                    </select>
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Mech stats</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="overlay-wrapper">
+                            <div class="overlay dark" id="stats_overlay">
+                                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Loading...</div>
+                            </div>
+                            <dl class="row">
+                                <dt class="col-4 col-lg-4">Armor</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_armor">{{ build.armor }}</dd>
+                                <dt class="col-4 col-lg-4">Engine</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_engine">{{ build.engine }}</dd>
+                                <dt class="col-4 col-lg-4">Speed</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_speed">{{ build.speed }}</dd>
+                                <dt class="col-4 col-lg-4">Firepower</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_firepower">{{ build.firepower }}</dd>
+                                <dt class="col-4 col-lg-4">DPS (SUS/MAX)</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_dps">{{ build.dps }}</dd>
+                                <dt class="col-4 col-lg-4">Heat Sinks</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_heatsinks">{{ build.heatsinks }}</dd>
+                                <dt class="col-4 col-lg-4">Dissipation</dt>
+                                <dd class="col-8 col-lg-8 text-lightblue" id="stats_dissipation">{{ build.dissipation }}</dd>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="loadout" class="col-4 col-lg-2 col-form-label">Loadout link</label>
-                <div class="col-8 col-lg-4">
-                    <input type="url" class="form-control" id="loadout" name="loadout" value="{{ build.loadout }}" required>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="name" class="col-4 col-lg-2 col-form-label">Build name</label>
-                <div class="col-8 col-lg-4">
-                    <input type="text" class="form-control" id="name" name="name" value="{{ build.name }}" required>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="engine" class="col-4 col-lg-2 col-form-label">Engine</label>
-                <div class="col-8 col-lg-4">
-                    <input type="text" class="form-control" id="engine" name="engine" value="{{ build.engine }}">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="code" class="col-4 col-lg-2 col-form-label">Build code</label>
-                <div class="col-8 col-lg-4">
-                    <input type="text" class="form-control" id="code" name="code" value="{{ build.code }}">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="notes" class="col-4 col-lg-2 col-form-label">Notes</label>
-                <div class="col-8 col-lg-4">
-                    <textarea class="form-control" id="notes" name="notes">{{ build.notes }}</textarea>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="for_omni_mechs" class="col-4 col-lg-2 col-form-label">For omni mechs</label>
-                <div class="col-1">
-                    <input type="checkbox" class="form-control" id="for_omni_mechs" name="for_omni_mechs" title="Could be used on all omni-mechs" {% if build.for_omni_mechs %}checked{% endif %}>
-                    <input type="hidden" class="form-control" id="for_omni_mechs_false" name="for_omni_mechs">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="approved" class="col-4 col-lg-2 col-form-label">Approved build</label>
-                <div class="col-1">
-                    <input type="checkbox" class="form-control" id="approved" name="approved" title="Build could be used in a dropdeck" {% if build.approved %}checked{% endif %}>
-                    <input type="hidden" class="form-control" id="approved_false" name="approved">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="offset-4 offset-lg-2 col-8 col-lg-4">
-                    <a href="{{ url_for('views.builds') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
-                    {% if build.mech_id != "" %}
-                    <a href="{{ url_for('views.builds') }}" class="btn btn-danger" role="button" data-toggle="modal" data-target="#confirmation">Delete</a>
-                    {% endif %}
-                    <button type="submit" class="btn btn-success">Save</button>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 {% endblock %}
 {% block scripts %}
+    <!-- Easy Toasts -->
+    <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+
     <script>
         $(document).ready(function() {
             var selectField = $('#mech_id');
@@ -124,6 +198,8 @@
     </script>
     <script>
         $(document).ready(function() {
+            $('#stats_overlay').hide();
+
             $('#loadout').on('change', function() {
                 var url = $(this).val();
 
@@ -136,14 +212,7 @@
                 var match = urlPattern.exec(url);
                 
                 if (!match) {
-                    $(document).Toasts('create', {
-                        class: 'bg-danger',
-                        title: 'Error parsing URL',
-                        subtitle: 'Close',
-                        body: 'Provided link is not a valid MechDB link.',
-                        delay: 3000,
-                        autohide: true
-                    })
+                    toastError('Error parsing URL', 'Provided link is not a valid MechDB link.');
                     return;
                 }
                 
@@ -161,15 +230,48 @@
                     selectField.val(mechIdValue);
                     updateCheckboxState(selectField);
                 } else {
-                    $(document).Toasts('create', {
-                        class: 'bg-danger',
-                        title: 'Mech not found',
-                        subtitle: 'Close',
-                        body: mechId + ' is not a correct mech name.',
-                        delay: 3000,
-                        autohide: true
-                    });
+                    // Note: ADR-WL can't be found in a list of mechs but link will be valid
+                    toastError('Mech not found', mechIdParam + ' is not a correct mech name.');
                 }
+
+                const baseUrl = "{{ url_for('views.build_details') }}";
+                $('#stats_overlay').show();
+
+                $.ajax({
+                    url: baseUrl + '?url=' + url,
+                    type: 'GET',
+                    success: function(response) {
+                        $('#stats_overlay').hide();
+                        if (Object.keys(response).length = 0) {
+                            // Message
+                            return;
+                        }
+
+                        var stats = {
+                            'armor': '#stats_armor',
+                            'engine': '#stats_engine',
+                            'speed': '#stats_speed',
+                            'firepower': '#stats_firepower',
+                            'dps': '#stats_dps',
+                            'heatsinks': '#stats_heatsinks',
+                            'dissipation': '#stats_dissipation'
+                        }
+
+                        for (var key in stats) {
+                            if (key in response) {
+                                // Input element
+                                $('#' + key).val(response[key]);
+
+                                // Text field
+                                $(stats[key]).text(response[key]);
+                            }
+                        };
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        $('#stats_overlay').hide();
+                        toastError('Error', 'Server error while fetching mech details');
+                    }
+                });
             });
         });
     </script>

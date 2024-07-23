@@ -137,7 +137,7 @@
                                 <td class="d-none d-lg-table-cell">{{ row.tonnage }}</td>
                                 <td class="d-none d-lg-table-cell">{{ row.class }}</td>
                                 <td>
-                                    <a class="text-lightblue" href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyToClipboard(this)"><i class="far fa-copy"></i></a>
+                                    <a class="text-lightblue" href="#" title="Copy build code" data-code="{{ row.build.code }}" onclick="copyCode(this)"><i class="far fa-copy"></i></a>
                                     {% if row.build.loadout %}
                                     <a class="text-lightblue p-3" href="{{ row.build.loadout }}" target="_blank">{{ row.build.name }}</a>
                                     {% endif %}
@@ -156,7 +156,12 @@
 </div>
 {% endblock %}
 {% block scripts %}
+    <!-- Easy Toasts -->
+    <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+
+    <!-- Clipboard utility -->
     <script src="{{ url_for('static', filename='adminlte/js/clipboard.js') }}"></script>
+
     <script>
         $(document).ready(function() {
             const $pilotFilter = $('#pilot_filter');
@@ -183,5 +188,10 @@
                 });
             });
         });
+    </script>
+    <script>
+        function copyCode(element) {
+            copyToClipboard(element);
+        }
     </script>
 {% endblock %}

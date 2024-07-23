@@ -68,6 +68,9 @@
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
 
+  <!-- Easy Toasts -->
+  <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+
   <!-- Page specific script -->
   <script>
     $(function () {
@@ -90,14 +93,7 @@
               document.execCommand("copy");
               document.body.removeChild(textarea);
               
-              $(document).Toasts('create', {
-                class: 'bg-success',
-                title: 'Data copied to clipboard',
-                subtitle: 'Close',
-                body: 'You mechlist have been copied to a clipboard',
-                delay: 3000,
-                autohide: true
-              })
+              toastSuccess('Data copied to a clipboard', 'You mechlist have been copied to a clipboard');
             }
           }
         ]

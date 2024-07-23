@@ -1,3 +1,5 @@
+// Requires additional import of toast.js';
+
 // Function to copy text to the clipboard
 //
 // @param {HTMLElement} element - The HTML element that triggers the copy action. It should have data-code attribute.
@@ -13,13 +15,6 @@ function copyToClipboard(element) {
         document.execCommand("copy");
         document.body.removeChild(textarea);
 
-        $(document).Toasts('create', {
-            class: 'bg-success',
-            title: 'Data copied to clipboard',
-            subtitle: 'Close',
-            body: 'You build code have been copied to a clipboard',
-            delay: 3000,
-            autohide: true
-        })
+        toastSuccess('Data copied to a clipboard', 'You build code have been copied to a clipboard');
     }
 }
