@@ -57,6 +57,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="engine" class="col-4 col-lg-3 col-form-label">Engine</label>
+                        <div class="col-8 col-lg-6">
+                            <input type="text" class="form-control" id="engine" name="engine" value="{{ build.engine }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="code" class="col-4 col-lg-3 col-form-label">Build code</label>
                         <div class="col-8 col-lg-6">
                             <input type="text" class="form-control" id="code" name="code" value="{{ build.code }}">
@@ -86,12 +92,6 @@
                         <label for="armor" class="col-4 col-lg-3 col-form-label">Armor</label>
                         <div class="col-8 col-lg-6">
                             <input type="text" class="form-control" id="armor" name="armor" value="{{ build.armor }}">
-                        </div>
-                    </div>
-                    <div class="form-group row" style="display: none;">
-                        <label for="engine" class="col-4 col-lg-3 col-form-label">Engine</label>
-                        <div class="col-8 col-lg-6">
-                            <input type="text" class="form-control" id="engine" name="engine" value="{{ build.engine }}">
                         </div>
                     </div>
                     <div class="form-group row" style="display: none;">
@@ -135,6 +135,7 @@
                     </div>
                 </form>
             </div>
+            <!-- Mech stats
             <div class="col-12 col-lg-3">
                 <div class="card">
                     <div class="card-header">
@@ -165,7 +166,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 {% endblock %}
@@ -234,44 +235,44 @@
                     toastError('Mech not found', mechIdParam + ' is not a correct mech name.');
                 }
 
-                const baseUrl = "{{ url_for('views.build_details') }}";
-                $('#stats_overlay').show();
+                // const baseUrl = "{{ url_for('views.build_details') }}";
+                // $('#stats_overlay').show();
 
-                $.ajax({
-                    url: baseUrl + '?url=' + url,
-                    type: 'GET',
-                    success: function(response) {
-                        $('#stats_overlay').hide();
-                        if (Object.keys(response).length = 0) {
-                            // Message
-                            return;
-                        }
+                // $.ajax({
+                //     url: baseUrl + '?url=' + url,
+                //     type: 'GET',
+                //     success: function(response) {
+                //         $('#stats_overlay').hide();
+                //         if (Object.keys(response).length = 0) {
+                //             // Message
+                //             return;
+                //         }
 
-                        var stats = {
-                            'armor': '#stats_armor',
-                            'engine': '#stats_engine',
-                            'speed': '#stats_speed',
-                            'firepower': '#stats_firepower',
-                            'dps': '#stats_dps',
-                            'heatsinks': '#stats_heatsinks',
-                            'dissipation': '#stats_dissipation'
-                        }
+                //         var stats = {
+                //             'armor': '#stats_armor',
+                //             'engine': '#stats_engine',
+                //             'speed': '#stats_speed',
+                //             'firepower': '#stats_firepower',
+                //             'dps': '#stats_dps',
+                //             'heatsinks': '#stats_heatsinks',
+                //             'dissipation': '#stats_dissipation'
+                //         }
 
-                        for (var key in stats) {
-                            if (key in response) {
-                                // Input element
-                                $('#' + key).val(response[key]);
+                //         for (var key in stats) {
+                //             if (key in response) {
+                //                 // Input element
+                //                 $('#' + key).val(response[key]);
 
-                                // Text field
-                                $(stats[key]).text(response[key]);
-                            }
-                        };
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        $('#stats_overlay').hide();
-                        toastError('Error', 'Server error while fetching mech details');
-                    }
-                });
+                //                 // Text field
+                //                 $(stats[key]).text(response[key]);
+                //             }
+                //         };
+                //     },
+                //     error: function(jqXHR, textStatus, errorThrown) {
+                //         $('#stats_overlay').hide();
+                //         toastError('Error', 'Server error while fetching mech details');
+                //     }
+                // });
             });
         });
     </script>
