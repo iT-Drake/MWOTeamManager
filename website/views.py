@@ -41,6 +41,7 @@ def home():
 ##  Route:
 ##      /mechlist-update
 ##      /mechlist-search
+##      /mechlist-add
 ## ------------------------------------------------------------------------------------------------
 
 @views.route('/mechlist-update', methods=['GET', 'POST'])
@@ -59,7 +60,8 @@ def mechlist_update():
         
         db.session.commit()
 
-    return render_template('mechlist-update.html', user=current_user)
+    mechs = Mech.All()
+    return render_template('mechlist-update.html', user=current_user, mechs=mechs)
 
 @views.route('/mechlist-search')
 @login_required
@@ -73,6 +75,32 @@ def mechlist_search():
     team_total = Mechlist.TeamTotal()
 
     return render_template('mechlist-search.html', data=data, team_total=team_total)
+
+@views.route('/mechlist-add', methods=['POST'])
+@login_required
+def mechlist_add():
+    data = request.get_json()
+    id = data.get('id')
+    mech = Mech.query.get(id)
+
+    response = {}
+    if mech:
+        new_item = Mechlist(user_id=current_user.id, mech_name=mech.name)
+        db.session.add(new_item)
+        db.session.commit()
+
+        response['success'] = True
+        response['mech'] = mech.name
+        response['chassis'] = mech.chassis
+        response['side'] = mech.side
+        response['tonnage'] = mech.tonnage
+        response['class'] = mech.weight_class
+        response['type'] = mech.chassis_type
+    else:
+        response['success'] = False
+        response['error'] = f'Selected mech wasn\'t found in the database.'
+
+    return response
 
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
