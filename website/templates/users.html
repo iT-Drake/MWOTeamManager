@@ -1,0 +1,118 @@
+{% extends "template.html" %}
+{% block title %}Users{% endblock %}
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+{% endblock %}
+{% block ContentHeader %}Users{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <!-- card-header -->
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">User roles</h3>
+                </div>
+
+                <!-- card-body -->
+                <div class="card-body">
+                    <table id="users" class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Mechs</th>
+                                <th style="max-width: 100px;">Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                {% if user.id != current_user.id %}
+                                <tr>
+                                    <td class="align-middle">{{ user.in_game_name }}</td>
+                                    <td class="align-middle">{{ user.mechs }}</td>
+                                    <td class="align-middle" style="max-width: 100px;">
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-danger role-button" data-value="-1">-</button>
+                                            <input type="text" class="form-control-plaintext text-center text-white" data-id="{{ user.id }}" data-value="{{ user.role }}" value="{{ roles[user.role] }}" readonly>
+                                            <button type="button" class="btn btn-success role-button" data-value="1">+</button>
+                                        </div>
+                                    </td>  
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <!-- DataTables  & Plugins -->
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+
+    <!-- Easy Toasts -->
+    <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+
+    <!-- Page specific scripts -->
+    <script>
+        $(function () {
+            $("#users").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 20
+            }).buttons().container().appendTo('#users_wrapper .col-md-6:eq(0)');
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.role-button').click(function() {
+                var button = $(this);
+                var input = button.siblings('input');
+                var currentRole = input.data('value');
+                var userId = input.data('id');
+                var offset = button.data('value');
+                var newRole = Number(currentRole) + Number(offset);
+
+                var roles = {};
+                {% for key, value in roles.items() %}
+                roles['{{ key }}'] = '{{ value }}';
+                {% endfor %}
+
+                if (roles[newRole] === undefined) {
+                    return;
+                }
+
+                baseUrl = '{{ url_for("views.change_role") }}';
+                $.ajax({
+                    url: baseUrl,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        user_id: userId,
+                        new_role: newRole
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            input.val(roles[newRole]);
+                            input.data('value', newRole);
+                            toastSuccess('Role updated', 'Changed the role for user ' + roles[newRole]);
+                        } else {
+                            toastError('Error updating role', response.message);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        toastError('Error performing AJAX request', errorThrown);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

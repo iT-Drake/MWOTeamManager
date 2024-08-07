@@ -6,11 +6,13 @@ from flask import flash
 from flask_login import login_required
 from flask_login import current_user
 
-from .utility import Now, Today, LocalDate, UniversalDate, FormData, Sort
+from .utility import Now, Today, LocalDate, UniversalDate, Duration, FormData, Sort
+
+from .roles import Role, role_required
 
 from .models import Mechlist, User
 from .models import Build, Mech
-from .models import Tournament, Event, Map
+from .models import Tournament, Event, Attendance, SharedEvent, Map
 from .models import Dropdeck, DropdeckLine
 from .parser import parse_mechlist
 from .scraper import scrape_url
@@ -29,13 +31,16 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     events = Event.ActiveEvents()
+    event_ids = [event.id for event in events]
+    attended_events = Attendance.query.filter(Attendance.user_id == current_user.id, Attendance.event_id.in_(event_ids)).all()
+    attendance = [item.event_id for item in attended_events]
     stats = {
         "users": User.Total(),
         "mechs": Mechlist.Total(),
         "builds": Build.Total(),
         "events": len(events)
     }
-    return render_template("home.html", user=current_user, stats=stats, events=events)
+    return render_template("home.html", user=current_user, stats=stats, events=events, attendance=attendance)
 
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
@@ -65,6 +70,7 @@ def mechlist_update():
 
 @views.route('/mechlist-search')
 @login_required
+@role_required(Role.TeamMember)
 def mechlist_search():
     users = User.All()
     data = {}
@@ -85,9 +91,11 @@ def mechlist_add():
 
     response = {}
     if mech:
-        new_item = Mechlist(user_id=current_user.id, mech_name=mech.name)
-        db.session.add(new_item)
-        db.session.commit()
+        item = Mechlist.query.filter_by(user_id=current_user.id, mech_name=mech.name).first()
+        if not item:
+            new_item = Mechlist(user_id=current_user.id, mech_name=mech.name)
+            db.session.add(new_item)
+            db.session.commit()
 
         response['success'] = True
         response['mech'] = mech.name
@@ -109,6 +117,7 @@ def mechlist_add():
 
 @views.route('/calendar')
 @login_required
+@role_required(Role.TeamMember)
 def calendar():
     return render_template('not-implemented.html')
 
@@ -122,12 +131,14 @@ def calendar():
 
 @views.route('/tournaments')
 @login_required
+@role_required(Role.TeamMember)
 def tournaments():
     all_tournaments = Tournament.query.all()
     return render_template('tournaments.html', tournaments=all_tournaments)
 
 @views.route('/tournament-add', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def tournament_add():
     if request.method == 'POST':
         form_data = FormData(request.form)
@@ -149,6 +160,7 @@ def tournament_add():
 
 @views.route('/tournament-edit/<int:tournament_id>', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def tournament_edit(tournament_id):
     if request.method == 'POST':
         tournament = Tournament.query.filter_by(id=tournament_id).first()
@@ -172,6 +184,7 @@ def tournament_edit(tournament_id):
 
 @views.route('/tournament-finish/<int:tournament_id>')
 @login_required
+@role_required(Role.TeamMember)
 def tournament_finish(tournament_id):
     tournament = Tournament.query.filter_by(id=tournament_id).first()
     tournament.is_active = False
@@ -187,8 +200,13 @@ def tournament_finish(tournament_id):
 ##      /events
 ##      /event-add
 ##      /event-edit/<int:event_id>
-##      /event-view/<int:event_id>
 ##      /event-cancel/<int:event_id>
+##      /event-view/<int:event_id>
+##      /event-sign-up/<int:event_id>
+##      /event-withdraw/<int:event_id>
+##      /event-share
+##      /events/shared/<string:url>
+##      /delete-expired-links
 ## ------------------------------------------------------------------------------------------------
 
 def EventList():
@@ -196,83 +214,7 @@ def EventList():
     passed_events = Event.PassedEvents()
     return render_template('events.html', events=active_events, passed=passed_events)
 
-@views.route('/events')
-@login_required
-def events():
-    return EventList()
-
-@views.route('/event-add', methods=['GET', 'POST'])
-@login_required
-def event_add():
-    if request.method == 'POST':
-        form_data = FormData(request.form, date_columns=['date'])
-        form_data['date'] = UniversalDate(form_data['date'])
-        event = Event().Add(form_data)
-        db.session.add(event)
-        db.session.commit()
-
-        return EventList()
-    else:
-        tournaments = Tournament.query.filter_by(is_active=True).all()
-        event_data = {
-            "id": "",
-            "tournament_id": "",
-            "name": "",
-            "date": Now(local=True),
-            "duration": "",
-            "details": ""
-        }
-        return render_template('event-edit.html', event=event_data, tournaments=tournaments)
-
-@views.route('/event-edit/<int:event_id>', methods=['GET', 'POST'])
-@login_required
-def event_edit(event_id):
-    if request.method == 'POST':
-        event = Event.query.filter_by(id=event_id).first()
-        if event:
-            form_data = FormData(request.form, date_columns=['date'])
-            form_data['date'] = UniversalDate(form_data['date'])
-            event.Update(form_data)
-
-            db.session.add(event)
-            db.session.commit()
-        else:
-            flash('Event wasn\'t found.')
-    else:
-        event = Event.query.filter_by(id=event_id).first()
-        if event:
-            current_date = Now(local=True)
-            end_date = LocalDate(event.EndDate())
-            if end_date > current_date:
-                event.date = LocalDate(event.date)
-                tournaments = Tournament.query.filter_by(is_active=True).all()
-                return render_template('event-edit.html', event=event, tournaments=tournaments)
-            else:
-                flash('Event have ended and can\'t be edited.', category='error')
-        else:
-            flash('Event id wasn\'t found in the database.', category='error')
-
-    return EventList()
-
-@views.route('/event-cancel/<int:event_id>', methods=['GET', 'POST'])
-@login_required
-def event_cancel(event_id):
-    event = Event.query.get(event_id)
-    if event:
-        event.is_canceled = True
-        for attendee in event.attendees:
-            db.session.delete(attendee)
-        
-        db.session.add(event)
-        db.session.commit()
-    else:
-        flash('Event id wasn\'t found in the database.', category='error')
-
-    return EventList()
-
-@views.route('/event-view/<int:event_id>')
-@login_required
-def event_view(event_id):
+def RenderEventView(event_id):
     event = Event.query.get(event_id)
     dropdecks = []
     pilots_assigned = {}
@@ -291,10 +233,10 @@ def event_view(event_id):
                     pilots_assigned[pilot_name] = 1
             if row.mech_id:
                 mech = Mech.query.get(row.mech_id)
-                if mech.name in mechs_used:
-                    mechs_used[mech.name] += 1
+                if mech.chassis in mechs_used:
+                    mechs_used[mech.chassis] += 1
                 else:
-                    mechs_used[mech.name] = 1
+                    mechs_used[mech.chassis] = 1
                 drop_tonnage += mech.tonnage
             
             item = {
@@ -332,12 +274,179 @@ def event_view(event_id):
     }
     data = {
         "event": event.name,
+        "event_id": event.id,
         "map_planner_link": event.map_planner_link if event.map_planner_link else "",
         "stats": stats,
         "dropdecks": dropdecks,
         "users": all_users
     }
     return render_template('event-view.html', data=data)
+
+@views.route('/events')
+@login_required
+@role_required(Role.TeamMember)
+def events():
+    return EventList()
+
+@views.route('/event-add', methods=['GET', 'POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_add():
+    if request.method == 'POST':
+        form_data = FormData(request.form, date_columns=['date'])
+        form_data['date'] = UniversalDate(form_data['date'])
+        event = Event().Add(form_data)
+        db.session.add(event)
+        db.session.commit()
+
+        return EventList()
+    else:
+        tournaments = Tournament.query.filter_by(is_active=True).all()
+        event_data = {
+            "id": "",
+            "tournament_id": "",
+            "name": "",
+            "date": Now(local=True),
+            "duration": "",
+            "details": ""
+        }
+        return render_template('event-edit.html', event=event_data, tournaments=tournaments)
+
+@views.route('/event-edit/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_edit(event_id):
+    if request.method == 'POST':
+        event = Event.query.filter_by(id=event_id).first()
+        if event:
+            form_data = FormData(request.form, date_columns=['date'])
+            form_data['date'] = UniversalDate(form_data['date'])
+            event.Update(form_data)
+
+            db.session.add(event)
+            db.session.commit()
+        else:
+            flash('Event wasn\'t found.')
+    else:
+        event = Event.query.filter_by(id=event_id).first()
+        if event:
+            current_date = Now(local=True)
+            end_date = LocalDate(event.EndDate())
+            if end_date > current_date:
+                event.date = LocalDate(event.date)
+                tournaments = Tournament.query.filter_by(is_active=True).all()
+                users = User.All()
+                attendees = event.Attendees()
+                return render_template('event-edit.html', event=event, tournaments=tournaments, users=users, attendees=attendees)
+            else:
+                flash('Event have ended and can\'t be edited.', category='error')
+        else:
+            flash('Event id wasn\'t found in the database.', category='error')
+
+    return EventList()
+
+@views.route('/event-cancel/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_cancel(event_id):
+    event = Event.query.get(event_id)
+    if event:
+        event.is_canceled = True
+        for attendee in event.attendees:
+            db.session.delete(attendee)
+        
+        db.session.add(event)
+        db.session.commit()
+    else:
+        flash('Event id wasn\'t found in the database.', category='error')
+
+    return EventList()
+
+@views.route('/event-view/<int:event_id>')
+@login_required
+@role_required(Role.TeamMember)
+def event_view(event_id):
+    return RenderEventView(event_id)
+
+@views.route('/event-sign-up', methods=['POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_sign_up():
+    event_id = request.json.get('event_id')
+    user_id = request.json.get('user_id')
+    response = {}
+
+    item = Attendance.query.filter_by(event_id=event_id, user_id=user_id).first()
+    if not item:
+        item = Attendance(event_id=event_id, user_id=user_id)
+        db.session.add(item)
+        db.session.commit()
+    
+    response['success'] = True
+    return response
+
+@views.route('/event-withdraw', methods=['POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_withdraw():
+    event_id = request.json.get('event_id')
+    user_id = request.json.get('user_id')
+    response = {}
+
+    item = Attendance.query.filter_by(event_id=event_id, user_id=user_id).first()
+    if item:
+        db.session.delete(item)
+        db.session.commit()
+    
+    response['success'] = True
+    return response
+
+@views.route('/event-share', methods=['POST'])
+@login_required
+@role_required(Role.TeamMember)
+def event_share():
+    event_id = request.json.get('event_id')
+
+    response = {}
+    shared_event = SharedEvent.query.filter_by(event_id=event_id).first()
+    if shared_event:
+        response['success'] = True
+        response['url'] = shared_event.url
+        return response
+
+    shared_event = SharedEvent()
+    shared_event.generate_url()
+    shared_event.event_id = event_id
+    shared_event.created_at = Now()
+    shared_event.expires_at = shared_event.created_at + Duration(days=7)
+    db.session.add(shared_event)
+    db.session.commit()
+
+    response['success'] = True
+    response['url'] = shared_event.url
+
+    return response
+
+@views.route('/events/shared/<string:url>')
+@login_required
+def shared_event(url):
+    shared_event = SharedEvent.query.filter_by(url=url).first()
+    if shared_event:
+        return RenderEventView(shared_event.event_id)
+    else:
+        return page_not_found('Shared link not found.')
+
+@views.route('/delete-expired-links', methods=['POST'])
+@login_required
+@role_required(Role.TeamMember)
+def delete_expired_links():
+    current_date = Now()
+    expired_links = SharedEvent.query.filter(SharedEvent.expires_at < current_date).all()
+    for item in expired_links:
+        db.session.delete(item)
+    db.session.commit()
+
+    return {'success': True}
 
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
@@ -353,11 +462,13 @@ def DropdeckList():
 
 @views.route('/dropdecks')
 @login_required
+@role_required(Role.TeamMember)
 def dropdecks():
     return DropdeckList()
 
 @views.route('/dropdeck-edit/<int:dropdeck_id>', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def dropdeck_edit(dropdeck_id):
     if request.method == 'POST':
         event_id = request.form.get("event_id")
@@ -456,6 +567,7 @@ def dropdeck_edit(dropdeck_id):
 
 @views.route('/dropdeck-add', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def dropdeck_add():
     if request.method == 'POST':
         data = {
@@ -504,6 +616,7 @@ def dropdeck_add():
 
 @views.route('/dropdeck-finalize/<int:dropdeck_id>')
 @login_required
+@role_required(Role.TeamMember)
 def dropdeck_finalize(dropdeck_id):
     dropdeck = Dropdeck.query.get(dropdeck_id)
     if dropdeck:
@@ -525,16 +638,19 @@ def dropdeck_finalize(dropdeck_id):
 
 @views.route('/builds')
 @login_required
+@role_required(Role.TeamMember)
 def builds():
     all_builds = Build.query.all()
     return render_template('builds.html', builds=all_builds)
 
 @views.route('/build-add', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def build_add():
     if request.method == 'POST':
         form_data = FormData(request.form, boolean_columns=['for_omni_mechs', 'approved'])
         form_data['updated'] = Today()
+        form_data['author_id'] = current_user.id
 
         build = Build().Add(data=form_data)
         db.session.add(build)
@@ -565,6 +681,7 @@ def build_add():
 
 @views.route('/build-edit/<int:build_id>', methods=['GET', 'POST'])
 @login_required
+@role_required(Role.TeamMember)
 def build_edit(build_id):
     if request.method == 'POST':
         build = Build.query.filter_by(id=build_id).first()
@@ -593,6 +710,7 @@ def build_edit(build_id):
 
 @views.route('/build-delete/<int:build_id>')
 @login_required
+@role_required(Role.TeamMember)
 def build_delete(build_id):
     build = Build.query.filter_by(id=build_id).first()
     if build:
@@ -606,11 +724,70 @@ def build_delete(build_id):
 
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
+##      /users
+##      /mechs
+##      /maps
+## ------------------------------------------------------------------------------------------------
+
+@views.route('/users')
+@login_required
+@role_required(Role.Admin)
+def users():
+    items = User.All()
+    users = []
+    for item in items:
+        user = {
+            "id": item.id,
+            "in_game_name": item.in_game_name,
+            "mechs": len(item.mechs),
+            "role": item.role
+        }
+        users.append(user)
+    roles = {role.value: role.name for role in Role}
+    return render_template('users.html', users=users, roles=roles)
+
+@views.route('/change-role', methods=['POST'])
+@login_required
+@role_required(Role.Admin)
+def change_role():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    new_role = data.get('new_role')
+
+    response = {}
+    user = User.query.get(user_id)
+    if user:
+        user.role = new_role
+        db.session.commit()
+        
+        response['success'] = True
+    else:
+        response['success'] = False
+        response['error'] = f'User wasn\'t found in the database.'
+
+    return response
+
+@views.route('/mechs')
+@login_required
+@role_required(Role.Admin)
+def mechs():
+    return render_template('not-implemented.html')
+
+@views.route('/maps')
+@login_required
+@role_required(Role.Admin)
+def maps():
+    return render_template('not-implemented.html')
+
+## ------------------------------------------------------------------------------------------------
+##  Route:
 ##      /deck-building?event_id=event_id&mech_id=mech_id&pilot_id=pilot_id
+##      /build-details?url=<valid_mechdb_url>
 ## ------------------------------------------------------------------------------------------------
 
 @views.route('/deck-building')
 @login_required
+@role_required(Role.TeamMember)
 def deck_building():
     result = {}
     # Event changed
@@ -687,6 +864,18 @@ def build_details():
     result = {}
     url = request.args.get('url')
     if url:
-        result = scrape_url(url=url, sleep=5)
+        result = scrape_url(url=url)
 
     return result
+
+## ------------------------------------------------------------------------------------------------
+##  Error handlers:
+## ------------------------------------------------------------------------------------------------
+
+@views.errorhandler(403)
+def access_denied(error):
+    return render_template('403.html'), 403
+
+@views.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404

@@ -48,6 +48,7 @@
               </div>
           </div>
         </div>
+        {% if current_user.IsMember() %}
         <div class="col-md-8">
           <div class="card">
             <div class="card-header border-transparent">
@@ -72,14 +73,22 @@
                     <th class="d-none d-lg-table-cell">Tournament</th>
                     <th>Event</th>
                     <th></th>
+                    <th></th>
                   </thead>
                   <tbody>
                     {% for event in events %}
                     <tr>
-                      <td>{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
-                      <td class="d-none d-lg-table-cell">{{ event.tournament.name }}</td>
-                      <td>{{ event.name }}</td>
-                      <td><a href="{{ url_for('views.event_view', event_id=event.id) }}" class="btn btn-block btn-info">View <i class="fas fa-angle-right"></i></a></td>
+                      <td class="align-middle">{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                      <td class="d-none d-lg-table-cell align-middle">{{ event.tournament.name }}</td>
+                      <td class="align-middle">{{ event.name }}</td>
+                      <td class="align-middle">
+                        {% if event.id in attendance %}
+                        <button type="button" class="btn btn-block btn-secondary btn-withdraw" data-id="{{ event.id }}">Withdraw <i class="fas fa-sign-out-alt"></i></button>
+                        {% else %}
+                        <button type="button" class="btn btn-block btn-success btn-sign-in" data-id="{{ event.id }}">Sign up <i class="fas fa-sign-in-alt"></i></button>
+                        {% endif %}
+                      </td>
+                      <td class="align-middle"><a href="{{ url_for('views.event_view', event_id=event.id) }}" class="btn btn-block btn-info">View <i class="fas fa-angle-right"></i></a></td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -90,5 +99,54 @@
             <!-- /.card-body -->
           </div>
         </div>
+        {% endif %}
     </div>
+{% endblock %}
+{% block scripts %}
+  <!-- Easy Toasts -->
+  <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+
+  <!-- Page specific scripts -->
+  <script>
+    $(document).ready(function() {
+      $('.btn-sign-in, .btn-withdraw').on('click', function() {
+          var button = $(this);
+          var eventId = button.data('id');
+          const baseUrl = button.hasClass('btn-sign-in') ? '{{ url_for("views.event_sign_up") }}' : '{{ url_for("views.event_withdraw") }}';
+
+          $.ajax({
+              url: baseUrl,
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                  event_id: eventId,
+                  user_id: '{{ current_user.id }}'
+              }),
+              success: function(response) {
+                  if (response.success) {
+                      // Replace the button with the appropriate text and class
+                      if (button.hasClass('btn-sign-in')) {
+                          button.html('Withdraw <i class="fas fa-sign-out-alt"></i>');
+                          button.removeClass('btn-success btn-sign-in');
+                          button.addClass('btn-secondary btn-withdraw');
+
+                          toastSuccess('Attendance confirmed', 'You successfuly signed up for the event.');
+                      } else {
+                          button.html('Sign up <i class="fas fa-sign-in-alt"></i>');
+                          button.removeClass('btn-secondary btn-withdraw');
+                          button.addClass('btn-success btn-sign-in');
+
+                          toastSuccess('Attendance withdrawn', 'You have withdrawn your attendance for the event.');
+                      }
+                  } else {
+                      toastError('Error', response.message);
+                  }
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                  toastError('Error performing AJAX request', errorThrown);
+              }
+          });
+      });
+    });
+  </script>
 {% endblock %}

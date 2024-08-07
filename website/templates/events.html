@@ -102,6 +102,9 @@
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
   <script src="{{ url_for('static', filename='adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
   
+  <!-- Easy Toasts -->
+  <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
+  
   <!-- Page specific scripts -->
   <script>
     $(function () {
@@ -115,6 +118,27 @@
             className: "btn-success",
             action: function () {
               location.assign("{{ url_for('views.event_add') }}");
+            }
+          },
+          {
+            text: 'Delete expired links',
+            action: function () {
+              const baseUrl = '{{ url_for("views.delete_expired_links") }}';
+
+              $.ajax({
+                  url: baseUrl,
+                  type: 'POST',
+                  success: function(response) {
+                      if (response.success) {
+                          toastSuccess('Links deleted', 'Expired shared event links were deleted.');
+                      } else {
+                          toastError('Error', response.message);
+                      }
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                      toastError('Error performing AJAX request', errorThrown);
+                  }
+              });
             }
           }
         ]

@@ -2,12 +2,15 @@
 {% block title %}Event view{% endblock %}
 {% block head %}
 {% endblock %}
-{% block ContentHeader %}{{ data.event }}{% endblock %}
+{% block ContentHeader %}
+    <span>{{ data.event }}</span>
+    <button type="button" class="btn btn-outline-success float-right" id="share_button">Share<i class="fas fa-share-alt pl-2"></i></button>
+{% endblock %}
 {% block ContentHeaderAddition %}
     <div class="form-group row">
         {% if data.map_planner_link %}
-        <div class="col-sm-3 align-middle pt-1">
-            <a class="text-lightblue" href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="pr-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
+        <div class="col-sm-3 align-middle">
+            <a class="btn btn-outline-primary" href="{{ data.map_planner_link }}" title="Open map planner" target="_blank"><span class="pr-2">Map planner</span><i class="fas fa-external-link-alt"></i></a>
         </div>
         {% endif %}
         <label for="pilot_filter" class="col-form-label col-sm-3">Pilot filter</label>
@@ -73,8 +76,8 @@
                 <div class="card-body p-0">
                     <table class="table table-sm">
                         <thead>
-                            <th>Mech</th>
-                            <th>Used</th>
+                            <th>Chassis</th>
+                            <th>Count</th>
                         </thead>
                         <tbody>
                             {% for key, value in data.stats.mechs %}
@@ -187,11 +190,42 @@
                     });
                 });
             });
+
+            $('#share_button').on('click', function() {
+                const eventId = '{{ data.event_id }}';
+                const baseUrl = '{{ url_for("views.event_share") }}';
+
+                $.ajax({
+                    url: baseUrl,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        event_id: eventId
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            const url = window.location.protocol + '//' + window.location.host + '{{ url_for("views.shared_event", url="") }}' + response.url;
+                            navigator.clipboard.writeText(url)
+                                .then(() => {
+                                    toastSuccess('Event shared', 'Event link copied to your clipboard.');
+                                })
+                                .catch(err => {
+                                    toastError('Failed to copy text to clipboard', err);
+                                });
+                        } else {
+                            toastError('Error', response.message);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        toastError('Error performing AJAX request', errorThrown);
+                    }
+                });
+            });
         });
     </script>
     <script>
         function copyCode(element) {
-            copyToClipboard(element);
+            copyCodeToClipboard(element);
         }
     </script>
 {% endblock %}

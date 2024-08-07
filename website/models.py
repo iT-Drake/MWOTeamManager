@@ -10,10 +10,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from datetime import datetime, timedelta
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from .roles import Role
 
-from .utility import Duration, LocalDate, SetUTC, Now
+from .utility import Duration, LocalDate, SetUTC, Now, UID
 from . import db
 
 class Model(db.Model):
@@ -45,6 +44,7 @@ class User(Model, UserMixin):
     timezone = Column(String(100))
     password = Column(String(150))
     admin = Column(Boolean, default=False)
+    role = Column(Integer, default=0)
     mechs = relationship('Mechlist', backref='user', lazy=True)
 
     @classmethod
@@ -55,6 +55,12 @@ class User(Model, UserMixin):
     @classmethod
     def All(self):
         return self.query.filter_by(admin=False).all()
+    
+    def IsMember(self):
+        return self.role >= Role.TeamMember.value
+
+    def IsAdmin(self):
+        return self.role >= Role.Admin.value
 
 class Mech(Model):
     __tablename__ = 'mechs'
@@ -138,20 +144,29 @@ class Event(Model):
         return items
     
     def EndDate(self):
-        return SetUTC(self.date + Duration(self.duration)) if self.duration else SetUTC(self.date)
+        return SetUTC(self.date + Duration(minutes=self.duration)) if self.duration else SetUTC(self.date)
     
     def Attendees(self):
         pilots = {}
-        # for item in self.attendees:
-        #     pilots[item.user_id] = item.user.in_game_name
-        # if len(pilots) == 0:
-        #     items = User.All()
-        #     for item in items:
-        #         pilots[item.id] = item.in_game_name
-        items = User.All()
-        for item in items:
-            pilots[item.id] = item.in_game_name
+        for item in self.attendees:
+            pilots[item.user_id] = item.user.in_game_name
+        if len(pilots) == 0:
+            items = User.All()
+            for item in items:
+                pilots[item.id] = item.in_game_name
         return pilots
+
+class SharedEvent(Model):
+    __tablename__ = 'shared_events'
+
+    id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey('events.id'), index=True)
+    url = Column(String(32), unique=True, nullable=False, index=True)
+    created_at = Column(DateTime)
+    expires_at = Column(DateTime)
+
+    def generate_url(self):
+        self.url = UID()
 
 class Attendance(db.Model):
     __tablename__ = 'attendances'
@@ -185,8 +200,10 @@ class Build(Model):
     dps = Column(String(10))
     heatsinks = Column(String(10))
     dissipation = Column(String(10))
+    author_id = Column(Integer, ForeignKey('users.id'))
     updated = Column(DateTime(timezone=True), default=func.now())
     data = relationship('Mech', backref='build', lazy=True)
+    author = relationship('User', backref='build', lazy=True)
 
 class Dropdeck(Model):
     __tablename__ = 'dropdecks'

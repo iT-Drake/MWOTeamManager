@@ -41,6 +41,7 @@
         <th class="d-none d-lg-table-cell">Engine</th>
         <th>Loadout</th>
         <th class="d-none d-lg-table-cell">Notes</th>
+        <th class="d-none d-lg-table-cell">Author</th>
         <th class="d-none d-lg-table-cell">Modified</th>
         <th>#</th>
     </tr>
@@ -60,6 +61,7 @@
           <a class="text-lightblue p-3" href="{{ build.loadout }}" target="_blank">{{ build.name }}</a>
         </td>
         <td class="d-none d-lg-table-cell">{{ build.notes }}</td>
+        <td class="d-none d-lg-table-cell">{{ build.author.in_game_name }}</td>
         <td class="d-none d-lg-table-cell">
           {% if build.approved %}
           <span class="text-success">{{ build.updated.strftime("%Y-%m-%d") }}</span>
@@ -174,7 +176,7 @@
   </script>
   <script>
     function copyCode(element) {
-      copyToClipboard(element);
+      copyCodeToClipboard(element);
     }
   </script>
 {% endblock %}

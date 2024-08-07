@@ -89,7 +89,7 @@
       <div class="sidebar">
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
                 with font-awesome or any other icon font library -->
             
@@ -109,15 +109,18 @@
                     <p>Update</p>
                   </a>
                 </li>
+                {% if current_user.IsMember() %}
                 <li class="nav-item">
                   <a href="{{ url_for('views.mechlist_search') }}" class="nav-link">
                     <i class="fas fa-search nav-icon text-danger"></i>
                     <p>Search</p>
                   </a>
                 </li>
+                {% endif %}
               </ul>
             </li>
 
+            {% if current_user.IsMember() %}
             <!-- Schedule -->
             <li class="nav-item" id="menu_schedule">
               <a href="#" class="nav-link">
@@ -149,7 +152,43 @@
                 </li> -->
               </ul>
             </li>
-
+            {% endif %}
+            
+            {% if current_user.IsAdmin() %}
+            <!-- Admin panel -->
+            <li class="nav-item" id="menu_admin_panel">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-unlock"></i>
+                <p>
+                  Admin panel
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ url_for('views.users') }}" class="nav-link">
+                    <i class="fas fa-users nav-icon text-purple"></i>
+                    <p>Users</p>
+                  </a>
+                </li>
+                <!-- In development
+                <li class="nav-item">
+                  <a href="{{ url_for('views.mechs') }}" class="nav-link">
+                    <i class="fas fa-pen-square nav-icon text-lightblue"></i>
+                    <p>Mechs</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ url_for('views.maps') }}" class="nav-link">
+                    <i class="fas fa-map-signs nav-icon text-orange"></i>
+                    <p>Maps</p>
+                  </a>
+                </li> -->
+              </ul>
+            </li>
+            {% endif %}
+            
+            {% if current_user.IsMember() %}
             <!-- Dropdecks -->
             <li class="nav-item">
               <a href="{{ url_for('views.dropdecks') }}" class="nav-link">
@@ -159,7 +198,9 @@
                 </p>
               </a>
             </li>
+            {% endif %}
 
+            {% if current_user.IsMember() %}
             <!-- Builds -->
             <li class="nav-item">
               <a href="{{ url_for('views.builds') }}" class="nav-link">
@@ -169,7 +210,7 @@
                 </p>
               </a>
             </li>
-
+            {% endif %}
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

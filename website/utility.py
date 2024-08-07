@@ -7,6 +7,8 @@ from pytz import all_timezones
 from pytz import timezone as tz
 from pytz import utc
 
+from uuid import uuid4
+
 from operator import itemgetter
 
 current_timezone = None
@@ -65,12 +67,15 @@ def TextToDate(text_value):
     """Converts text data represented as YYYY-MM-DDTHH:mm to date."""
     return datetime.strptime(text_value, "%Y-%m-%dT%H:%M")
 
-def Duration(minutes):
+def Duration(minutes = 0, days = 0):
     """Returns timedelta object with duration in minutes that can be added to a date."""
-    return timedelta(minutes=minutes)
+    return timedelta(minutes=minutes, days=days)
 
 def Sort(dictionaries, key, reverse=False):
     dictionaries.sort(key=itemgetter(key), reverse=reverse)
+
+def UID():
+    return str(uuid4()).replace('-', '')[:32]
 
 ## ------------------------------------------------------------------------------------------------
 ##  Forms

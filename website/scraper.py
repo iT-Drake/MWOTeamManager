@@ -1,10 +1,12 @@
-from requests_html import HTMLSession
+# from requests_html import HTMLSession
+from functools import lru_cache
 
-session = HTMLSession()
-session.browser
+# session = HTMLSession()
+# session.browser
 
+@lru_cache(maxsize=256)
 def scrape_url(url, sleep=10):
-    """Intiate browser session for provided url and scrape its content.
+    """Initiate browser session for provided url and scrape its content.
     MechDB uses their own table class '.col.col-half.tbl' to wrap stats and values:
     <table _ngcontent-mxx-c66="" class="col col-half tbl">
         <tr _ngcontent-mxx-c66="">
@@ -21,29 +23,28 @@ def scrape_url(url, sleep=10):
     Returns:
         dictionary: mech stats and their values
     """
-    response = session.get(url)
-    response.html.render(sleep=sleep)
+    # response = session.get(url)
+    # response.html.render(sleep=sleep)
 
-    tables = response.html.find('.col.col-half.tbl')
+    # tables = response.html.find('.col.col-half.tbl')
 
-    supported_stats = {
-        'Armor': 'armor',
-        'Engine': 'engine',
-        'Speed': 'speed',
-        'Firepower': 'firepower',
-        'DPS (SUS/MAX)': 'dps',
-        'Heat Sinks': 'heatsinks',
-        'Dissipation': 'dissipation'
-    }
+    # supported_stats = {
+    #     'Armor': 'armor',
+    #     'Engine': 'engine',
+    #     'Speed': 'speed',
+    #     'Firepower': 'firepower',
+    #     'DPS (SUS/MAX)': 'dps',
+    #     'Heat Sinks': 'heatsinks',
+    #     'Dissipation': 'dissipation'
+    # }
 
     stats = {}
-    for table in tables:
-        rows = table.find('tr')
-        for row in rows:
-            header_text = row.find('th', first=True).text
-            data_text = row.find('td', first=True).text
-            if header_text in supported_stats:
-                stats[supported_stats[header_text]] = data_text.replace(" ", "")
+    # for table in tables:
+    #     rows = table.find('tr')
+    #     for row in rows:
+    #         header_text = row.find('th', first=True).text
+    #         data_text = row.find('td', first=True).text
+    #         if header_text in supported_stats:
+    #             stats[supported_stats[header_text]] = data_text.replace(" ", "")
     
     return stats
-
