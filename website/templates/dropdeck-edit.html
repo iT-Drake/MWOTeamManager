@@ -1,6 +1,8 @@
 {% extends "template.html" %}
 {% block title %}Dropdeck - Edit{% endblock %}
 {% block ContentHeader %}Dropdeck{% endblock %}
+{% block head %}
+{% endblock %}
 {% block content %}
     {% if data.id != "" %}
     <!-- Modal -->
@@ -107,11 +109,11 @@
                 <div class="col-6 col-lg-2">
                     <select class="form-control" id="pilot_id" name="pilot_id">
                         <option value="">Select pilot</option>
-                        {% for user in row.pilots %}
-                            {% if user.id == row.pilot_id %}
-                                <option value="{{ user.id }}" selected>{{ user.in_game_name }}</option>
+                        {% for id, name in row.pilots.items() %}
+                            {% if id == row.pilot_id %}
+                                <option value="{{ id }}" selected>{{ name }}</option>
                             {% else %}
-                                <option value="{{ user.id }}">{{ user.in_game_name }}</option>
+                                <option value="{{ id }}">{{ name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -173,7 +175,7 @@
         $(document).ready(function() {
             $('#event_id').change(function() {
                 var eventId = $(this).val();
-                var baseUrl = "{{ url_for('views.deck_building') }}";
+                var baseUrl = "{{ url_for('views.deck_building_event') }}";
                 var url = baseUrl + '?event_id=' + eventId;
 
                 $.ajax({
@@ -290,7 +292,7 @@
             rows.change(function() {
                 var pilotId = $(this).val();
                 var currentRow = $(this).closest('.form-group.row');
-                var url = "{{ url_for('views.deck_building') }}";
+                var url = "{{ url_for('views.deck_building_pilot') }}";
 
                 // Make an AJAX request to get the mech options for the selected pilot
                 $.ajax({
@@ -319,12 +321,13 @@
             var rows = row.find('select[name="mech_id"]');
             rows.change(function() {
                 var mechId = $(this).val();
+                var eventId = $('#event_id').val();
                 var currentRow = $(this).closest('.form-group.row');
-                var url = "{{ url_for('views.deck_building') }}";
+                var url = "{{ url_for('views.deck_building_mech') }}";
 
                 // Make an AJAX request to get the mech options for the selected pilot
                 $.ajax({
-                    url: url + '?mech_id=' + mechId,
+                    url: url + '?event_id=' + eventId + '&mech_id=' + mechId,
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {

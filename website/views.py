@@ -336,7 +336,8 @@ def event_edit(event_id):
                 event.date = LocalDate(event.date)
                 tournaments = Tournament.query.filter_by(is_active=True).all()
                 users = User.All()
-                attendees = event.Attendees()
+                items = Attendance.query.filter_by(event_id=event.id).all()
+                attendees = {item.user_id: item.user.in_game_name for item in items}
                 return render_template('event-edit.html', event=event, tournaments=tournaments, users=users, attendees=attendees)
             else:
                 flash('Event have ended and can\'t be edited.', category='error')
@@ -475,7 +476,6 @@ def dropdeck_edit(dropdeck_id):
         data = {
             "name": request.form.get("name"),
             "drop_number": request.form.get("drop_number"),
-            "author_id": current_user.id,
             "map_id": request.form.get("map_id"),
             "starting_side": request.form.get("starting_side"),
         }
@@ -504,13 +504,9 @@ def dropdeck_edit(dropdeck_id):
         return DropdeckList()
     else:
         dropdeck = Dropdeck.query.filter_by(id=dropdeck_id).first()
-        all_users = User.All()
         all_mechs = Mech.query.all()
-        if dropdeck.event_id:
-            event = Event.query.get(dropdeck.event_id)
-            users = event.Attendees()
-        else:
-            users = all_users
+        event = Event.query.get(dropdeck.event_id)
+        users = event.Attendees()
 
         rows = []
         for item in dropdeck.rows:
@@ -523,7 +519,7 @@ def dropdeck_edit(dropdeck_id):
             if item.mech_id:
                 mech = Mech.query.get(item.mech_id)
                 lines = Mechlist.query.filter_by(mech_name=mech.name).join(User).all()
-                pilots = [{"id": line.user.id, "in_game_name": line.user.in_game_name} for line in lines]
+                pilots = {line.user.id: line.user.in_game_name for line in lines}
 
                 builds = Build.query.filter_by(mech_id=mech.id, approved=True)
                 loadouts = {build.id: build.name for build in builds}
@@ -636,12 +632,15 @@ def dropdeck_finalize(dropdeck_id):
 ##      /builds-finish/<int:build_id>
 ## ------------------------------------------------------------------------------------------------
 
+def BuildsList():
+    all_builds = Build.query.all()
+    return render_template('builds.html', builds=all_builds)
+
 @views.route('/builds')
 @login_required
 @role_required(Role.TeamMember)
 def builds():
-    all_builds = Build.query.all()
-    return render_template('builds.html', builds=all_builds)
+    return BuildsList()
 
 @views.route('/build-add', methods=['GET', 'POST'])
 @login_required
@@ -693,11 +692,9 @@ def build_edit(build_id):
             db.session.add(build)
             db.session.commit()
 
-            all_builds = Build.query.all()
-            return render_template('builds.html', builds=all_builds)
+            return BuildsList()
         else:
             flash('Build id wasn\'t found in the database.', category='error')
-            return render_template('builds.html')
     else:
         build = Build.query.filter_by(id=build_id).first()
         mechs = Mech.query.all()
@@ -705,8 +702,8 @@ def build_edit(build_id):
             return render_template('build-edit.html', build=build, mechs=mechs)
         else:
             flash('Build id wasn\'t found in the database.', category='error')
-            all_builds = Build.query.all()
-            return render_template('builds.html', builds=all_builds)
+    
+    return BuildsList()
 
 @views.route('/build-delete/<int:build_id>')
 @login_required
@@ -725,6 +722,7 @@ def build_delete(build_id):
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
 ##      /users
+##      /change-role
 ##      /mechs
 ##      /maps
 ## ------------------------------------------------------------------------------------------------
@@ -781,14 +779,16 @@ def maps():
 
 ## ------------------------------------------------------------------------------------------------
 ##  Route:
-##      /deck-building?event_id=event_id&mech_id=mech_id&pilot_id=pilot_id
+##      /deck-building/event-change?event_id=event_id
+##      /deck-building/mech-change?event_id=event_id&mech_id=mech_id
+##      /deck-building/pilot-change?pilot_id=pilot_id
 ##      /build-details?url=<valid_mechdb_url>
 ## ------------------------------------------------------------------------------------------------
 
-@views.route('/deck-building')
+@views.route('/deck-building/event-change')
 @login_required
 @role_required(Role.TeamMember)
-def deck_building():
+def deck_building_event():
     result = {}
     # Event changed
     event_id = request.args.get('event_id')
@@ -803,16 +803,24 @@ def deck_building():
             mechs[item.id] = item.name
         result['mechs'] = mechs
 
-        return result
+    return result
 
-    # Mech changed
+@views.route('/deck-building/mech-change')
+@login_required
+@role_required(Role.TeamMember)
+def deck_building_mech():
+    result = {}
+    event_id = request.args.get('event_id')
     mech_id = request.args.get('mech_id')
-    if mech_id is not None:
+    if event_id and mech_id is not None:
+        event = Event.query.get(event_id)
+        pilots = event.Attendees()
+
         if mech_id:
             mech = Mech.query.get(mech_id)
 
+            items = Mechlist.query.filter(Mechlist.user_id.in_(pilots.keys()), Mechlist.mech_name == mech.name).join(User).all()
             pilots = {}
-            items = Mechlist.query.filter_by(mech_name=mech.name).join(User).all()
             for item in items:
                 pilots[item.user.id] = item.user.in_game_name
             result['pilots'] = pilots
@@ -829,19 +837,18 @@ def deck_building():
                 "class": mech.weight_class
             }
             result['details'] = details
-
-            return result
         else:
-            pilots = {}
-            items = User.All()
-            for item in items:
-                pilots[item.id] = item.in_game_name
-            
             result['pilots'] = pilots
             result['loadouts'] = {}
 
-            return result
+    return result
 
+@views.route('/deck-building/pilot-change')
+@login_required
+@role_required(Role.TeamMember)
+def deck_building_pilot():
+    result = {}
+    
     # Pilot changed
     pilot_id = request.args.get('pilot_id')
     if pilot_id is not None:
