@@ -5,20 +5,20 @@
     <div class="container-fluid">
         <form class="form-horizontal" method="post">
             <div class="form-group row">
-                <label for="name" class="col-2 col-form-label">User name</label>
-                <div class="col-4">
-                    <input type="text" readonly class="form-control-plaintext" id="name" name="name" value="{{ user.name }}">
+                <label for="name" class="col-4 col-lg-2 col-form-label">User name</label>
+                <div class="col-8 col-lg-4">
+                    <input type="text" readonly class="form-control" id="name" name="name" value="{{ user.name }}" readonly>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="in_game_name" class="col-2 col-form-label">In-game name</label>
-                <div class="col-4">
+                <label for="in_game_name" class="col-4 col-lg-2 col-form-label">In-game name</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="in_game_name" name="in_game_name" value="{{ user.in_game_name }}" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="timezone" class="col-2 col-form-label">Time zone</label>
-                <div class="col-4">
+                <label for="timezone" class="col-4 col-lg-2 col-form-label">Time zone</label>
+                <div class="col-8 col-lg-4">
                     <select class="form-control" id="timezone" name="timezone" required>
                         {% for timezone in timezones %}
                         <option value="{{ timezone }}" {% if user.timezone == timezone %}selected{% endif %}>{{ timezone }}</option>
@@ -27,19 +27,19 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="password1" class="col-2 col-form-label">New password</label>
-                <div class="col-4">
+                <label for="password1" class="col-4 col-lg-2 col-form-label">New password</label>
+                <div class="col-8 col-lg-4">
                     <input type="password" id="password1" name="password1" class="form-control" placeholder="New password">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="password2" class="col-2 col-form-label">Repeat password</label>
-                <div class="col-4">
+                <label for="password2" class="col-4 col-lg-2 col-form-label">Repeat password</label>
+                <div class="col-8 col-lg-4">
                     <input type="password" id="password2" name="password2" class="form-control" placeholder="Repeat password">
                 </div>
             </div>
             <div class="form-group row">
-                <div class="offset-2 col-4">
+                <div class="offset-4 offset-lg-2 col-8 col-lg-4">
                 <button type="submit" class="btn btn-success">Save</button>
                 </div>
             </div>

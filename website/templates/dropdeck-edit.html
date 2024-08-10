@@ -1,6 +1,8 @@
 {% extends "template.html" %}
 {% block title %}Dropdeck - Edit{% endblock %}
 {% block ContentHeader %}Dropdeck{% endblock %}
+{% block head %}
+{% endblock %}
 {% block content %}
     {% if data.id != "" %}
     <!-- Modal -->
@@ -30,11 +32,12 @@
         <form class="form-horizontal" method="post">
             <!-- Header -->
             <div class="form-group row">
-                <div class="col-1">
+                <!-- Back button -->
+                <div class="col-4 col-lg-1">
                     <a href="{{ url_for('views.dropdecks') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
                 </div>
                 <!-- Drop number (drop_number) -->
-                <div class="col-1">
+                <div class="col-4 col-lg-1">
                     <div class="form-group row">
                         <label for="drop_number" class="col-form-label col-4">Drop</label>
                         <div class="col-8">
@@ -43,7 +46,7 @@
                     </div>
                 </div>
                 <!-- Team select (starting_side) -->
-                <div class="col-1">
+                <div class="col-4 col-lg-1">
                     <select class="form-control" id="starting_side" name="starting_side" required>
                         {% for index in range(1,3) %}
                         <option value="{{ index }}" {% if index == data.starting_side %}selected{% endif %}>Team {{ index }}</option>
@@ -51,11 +54,11 @@
                     </select>
                 </div>
                 <!-- Dropdeck name -->
-                <div class="col-2">
+                <div class="col-6 col-lg-2">
                     <input type="text" class="form-control" id="name" name="name" value="{{ data.name }}" placeholder="Dropdeck name">
                 </div>
                 <!-- Map (map_id) -->
-                <div class="col-2">
+                <div class="col-6 col-lg-2">
                     <select class="form-control" id="map_id" name="map_id">
                         <option value="">Select map</option>
                         {% for map in data.maps %}
@@ -64,7 +67,7 @@
                     </select>
                 </div>
                 <!-- Event (event_id) -->
-                <div class="col-2">
+                <div class="col-6 col-lg-2">
                     <select class="form-control" id="event_id" name="event_id" {% if data.is_finalized %}disabled{% endif %} required>
                         <option value="">Select event</option>
                         {% for event in data.events %}
@@ -73,7 +76,7 @@
                     </select>
                 </div>
                 <!-- Buttons -->
-                <div class="col-2 btn-group align-self-start">
+                <div class="col-6 col-lg-2 btn-group align-self-start">
                     <button type="submit" class="btn btn-success">Save</button>
                     {% if data.id != "" and not data.is_finalized %}
                     <a href="#" class="btn btn-primary" role="button" data-toggle="modal" data-target="#confirmation">Finalize</a>
@@ -83,40 +86,40 @@
             <!-- Table header -->
             <div class="form-group row">
                 <!-- Pilot -->
-                <label class="col-2 col-form-label">Pilot</label>
+                <label class="col-6 col-lg-2 col-form-label">Pilot</label>
                 <!-- Spawn -->
-                <label class="col-1 col-form-label">Spawn</label>
+                <label class="col-2 col-lg-1 col-form-label">Spawn</label>
                 <!-- Mech -->
-                <label class="col-1 col-form-label">Mech</label>
+                <label class="col-4 col-lg-1 col-form-label">Mech</label>
                 <!-- Chassis -->
-                <label class="col-1 col-form-label">Chassis</label>
+                <label class="col-1 col-lg-1 col-form-label d-none d-lg-table-cell" style="max-width: 80px;">Chassis</label>
                 <!-- Tonnage -->
-                <label class="col-1 col-form-label" id="column_tonnage">Tonnage</label>
+                <label class="col-1 col-lg-1 col-form-label d-none d-lg-table-cell" style="max-width: 80px;" id="column_tonnage">Tonnage</label>
                 <!-- Weight class -->
-                <label class="col-1 col-form-label">Class</label>
+                <label class="col-1 col-lg-1 col-form-label d-none d-lg-table-cell" style="max-width: 80px;">Class</label>
                 <!-- Loadout -->
-                <label class="col-2 col-form-label">Loadout</label>
+                <label class="col-6 col-lg-2 col-form-label">Loadout</label>
                 <!-- Notes -->
-                <label class="col-3 col-form-label">Notes</label>
+                <label class="col-6 col-lg-3 col-form-label">Notes</label>
             </div>
             <!-- Table rows -->
             {% for row in data.rows %}
             <div class="form-group row">
                 <!-- Pilot -->
-                <div class="col-2">
+                <div class="col-6 col-lg-2">
                     <select class="form-control" id="pilot_id" name="pilot_id">
                         <option value="">Select pilot</option>
-                        {% for user in row.pilots %}
-                            {% if user.id == row.pilot_id %}
-                                <option value="{{ user.id }}" selected>{{ user.in_game_name }}</option>
+                        {% for id, name in row.pilots.items() %}
+                            {% if id == row.pilot_id %}
+                                <option value="{{ id }}" selected>{{ name }}</option>
                             {% else %}
-                                <option value="{{ user.id }}">{{ user.in_game_name }}</option>
+                                <option value="{{ id }}">{{ name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
                 </div>
                 <!-- Spawn -->
-                <div class="col-1">
+                <div class="col-2 col-lg-1">
                     <select class="form-control" id="spawn" name="spawn">
                         {% for spawn in data.spawns %}
                         <option value="{{ spawn }}" {% if spawn == row.spawn %}selected{% endif %}>{{ spawn }}</option>
@@ -124,7 +127,7 @@
                     </select>
                 </div>
                 <!-- Mech -->
-                <div class="col-1">
+                <div class="col-4 col-lg-1">
                     <select class="form-control" id="mech_id" name="mech_id">
                         <option value="">Select mech</option>
                         {% for mech in row.mechs %}
@@ -133,19 +136,19 @@
                     </select>
                 </div>
                 <!-- Chassis -->
-                <div class="col-1">
-                    <input type="text" readonly class="form-control-plaintext" id="chassis" name="chassis" value="{{ row.chassis }}">
+                <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                    <input type="text" class="form-control-plaintext text-lightblue" id="chassis" name="chassis" value="{{ row.chassis }}" readonly>
                 </div>
                 <!-- Tonnage -->
-                <div class="col-1">
-                    <input type="text" readonly class="form-control-plaintext" id="tonnage" name="tonnage" value="{{ row.tonnage }}">
+                <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                    <input type="text" class="form-control-plaintext text-lightblue" id="tonnage" name="tonnage" value="{{ row.tonnage }}" readonly>
                 </div>
                 <!-- Weight class -->
-                <div class="col-1">
-                    <input type="text" readonly class="form-control-plaintext" id="weight_class" name="weight_class" value="{{ row.weight_class }}">
+                <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                    <input type="text" class="form-control-plaintext text-lightblue" id="weight_class" name="weight_class" value="{{ row.weight_class }}" readonly>
                 </div>
                 <!-- Loadout -->
-                <div class="col-2">
+                <div class="col-6 col-lg-2">
                     <select class="form-control" id="build_id" name="build_id">
                         <option value="">Select loadout</option>
                         {% for key, value in row.loadouts.items() %}
@@ -158,7 +161,7 @@
                     </select>
                 </div>
                 <!-- Notes -->
-                <div class="col-3">
+                <div class="col-6 col-lg-3">
                     <input type="text" class="form-control" id="notes" name="notes" value="{{ row.notes }}" placeholder="Role or build notes">
                 </div>
             </div>
@@ -172,7 +175,7 @@
         $(document).ready(function() {
             $('#event_id').change(function() {
                 var eventId = $(this).val();
-                var baseUrl = "{{ url_for('views.deck_building') }}";
+                var baseUrl = "{{ url_for('views.deck_building_event') }}";
                 var url = baseUrl + '?event_id=' + eventId;
 
                 $.ajax({
@@ -224,14 +227,14 @@
                     var newRow = `
                         <div class="form-group row">
                             <!-- Pilot -->
-                            <div class="col-2">
+                            <div class="col-6 col-lg-2">
                                 <select class="form-control" id="pilot_id" name="pilot_id">
                                     <option value="">Select pilot</option>
                                     ` + pilotOptions + `
                                 </select>
                             </div>
                             <!-- Spawn -->
-                            <div class="col-1">
+                            <div class="col-2 col-lg-1">
                                 <select class="form-control" id="spawn" name="spawn">
                                     <option value="Alpha">Alpha</option>
                                     <option value="Bravo">Bravo</option>
@@ -239,32 +242,32 @@
                                 </select>
                             </div>
                             <!-- Mech -->
-                            <div class="col-1">
+                            <div class="col-4 col-lg-1">
                                 <select class="form-control" id="mech_id" name="mech_id">
                                     <option value="">Select mech</option>
                                     ` + mechOptions + `
                                 </select>
                             </div>
                             <!-- Chassis -->
-                            <div class="col-1">
-                                <input type="text" readonly class="form-control-plaintext" id="chassis" name="chassis" value="">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                                <input type="text" class="form-control-plaintext text-lightblue" id="chassis" name="chassis" value="" readonly>
                             </div>
                             <!-- Tonnage -->
-                            <div class="col-1">
-                                <input type="text" readonly class="form-control-plaintext" id="tonnage" name="tonnage" value="">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                                <input type="text" class="form-control-plaintext text-lightblue" id="tonnage" name="tonnage" value="" readonly>
                             </div>
                             <!-- Weight class -->
-                            <div class="col-1">
-                                <input type="text" readonly class="form-control-plaintext" id="weight_class" name="weight_class" value="">
+                            <div class="col-1 col-lg-1 d-none d-lg-table-cell" style="max-width: 80px;">
+                                <input type="text" class="form-control-plaintext text-lightblue" id="weight_class" name="weight_class" value="" readonly>
                             </div>
                             <!-- Loadout -->
-                            <div class="col-2">
+                            <div class="col-6 col-lg-2">
                                 <select class="form-control" id="build_id" name="build_id">
                                     <option value="">Select loadout</option>
                                 </select>
                             </div>
                             <!-- Notes -->
-                            <div class="col-3">
+                            <div class="col-6 col-lg-3">
                                 <input type="text" class="form-control" id="notes" name="notes" value="" placeholder="Role or build notes">
                             </div>
                         </div>
@@ -289,7 +292,7 @@
             rows.change(function() {
                 var pilotId = $(this).val();
                 var currentRow = $(this).closest('.form-group.row');
-                var url = "{{ url_for('views.deck_building') }}";
+                var url = "{{ url_for('views.deck_building_pilot') }}";
 
                 // Make an AJAX request to get the mech options for the selected pilot
                 $.ajax({
@@ -318,12 +321,13 @@
             var rows = row.find('select[name="mech_id"]');
             rows.change(function() {
                 var mechId = $(this).val();
+                var eventId = $('#event_id').val();
                 var currentRow = $(this).closest('.form-group.row');
-                var url = "{{ url_for('views.deck_building') }}";
+                var url = "{{ url_for('views.deck_building_mech') }}";
 
                 // Make an AJAX request to get the mech options for the selected pilot
                 $.ajax({
-                    url: url + '?mech_id=' + mechId,
+                    url: url + '?event_id=' + eventId + '&mech_id=' + mechId,
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
@@ -333,7 +337,6 @@
                         var tonnageField = currentRow.find('input[name="tonnage"]');
                         var classField = currentRow.find('input[name="weight_class"]');
                         
-                        console.log(data.loadouts);
                         var selectedValue = buildIdField.val();
                         var options = '<option value="">Select loadout</option>';
                         for (var buildId in data.loadouts) {

@@ -1,6 +1,6 @@
-### Running server as a daemon
+### Running server as a daemon on Ubuntu
 
-Yes, you can run a Waitress server as a daemon under Ubuntu. A daemon is a long-running background process that is not under the control of a terminal. Here are the steps to set up your Waitress server as a daemon:
+A daemon is a long-running background process that is not under the control of a terminal. Here are the steps to set up your Waitress server as a daemon:
 1. **Create a Systemd Service File**: Systemd is the default init system in Ubuntu, responsible for managing system services and daemons. You need to create a service file that describes your Waitress server.
 
    - Create a new file: `/etc/systemd/system/waitress.service`
@@ -11,15 +11,17 @@ Yes, you can run a Waitress server as a daemon under Ubuntu. A daemon is a long-
      After=network.target
 
      [Service]
-     User=your_username
-     WorkingDirectory=/path/to/your/project
-     ExecStart=/path/to/python /path/to/your/project/your_app.py
+     Type=simple
+     User=<YourUserName>
+     WorkingDirectory=<ProjectDirectory>
+     ExecStart=<ProjectDirectory>/.venv/bin/waitress-serve --port <Port> --call website:create_app
+     Restart=always
 
      [Install]
      WantedBy=multi-user.target
      ```
 
-   Replace `your_username` with your actual username, and adjust the paths (`/path/to/python`, `/path/to/your/project`, and `your_app.py`) accordingly.
+   Replace `YourUserName` with your actual username, and adjust the path `ProjectDirectory` accordingly.
 
 2. **Set Correct Permissions**: Ensure that the service file has the correct permissions:
    ```bash
@@ -42,6 +44,12 @@ Yes, you can run a Waitress server as a daemon under Ubuntu. A daemon is a long-
    sudo systemctl status waitress
    ```
 
-By following these steps, your Waitress server will run in the background as a daemon, and it will automatically start when the system boots. You can manage the daemon using the `systemctl` command (e.g., `start`, `stop`, `restart`, `status`).
+6. **Dig into the errors**: If you'll encounter any errors, you can check the log of the service with the following command:
+   ```bash
+   sudo journalctl -u waitress.naff.service
+   ```
+
+By following these steps, your Waitress server will run in the background as a daemon, and it will automatically start when the system boots.
+You can manage the daemon using the `systemctl` command (e.g., `start`, `stop`, `restart`, `status`).
 
 Remember to replace the placeholders in the service file with the appropriate paths and settings for your specific Waitress application.

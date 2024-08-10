@@ -29,20 +29,20 @@
     <div class="container-fluid">
         <form class="form-horizontal" method="post">
             <div class="form-group row">
-                <label for="name" class="col-2 col-form-label">Short name</label>
-                <div class="col-4">
+                <label for="name" class="col-4 col-lg-2 col-form-label">Short name</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="name" name="name" value="{{ tournament.name }}" placeholder="Short unique name">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="full_name" class="col-2 col-form-label">Full name</label>
-                <div class="col-4">
+                <label for="full_name" class="col-4 col-lg-2 col-form-label">Full name</label>
+                <div class="col-8 col-lg-4">
                     <input type="text" class="form-control" id="full_name" name="full_name" value="{{ tournament.full_name }}" placeholder="Name that will represent tournament in a list">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="team_size" class="col-2 col-form-label">Team size</label>
-                <div class="col-4">
+                <label for="team_size" class="col-4 col-lg-2 col-form-label">Team size</label>
+                <div class="col-8 col-lg-4">
                     {% if tournament.id == "" %}
                     <select class="form-control" id="team_size" name="team_size">
                         {% for count in range(1,12) %}
@@ -51,12 +51,12 @@
                         <option value="12" selected="selected">12</option>
                     </select>
                     {% else %}
-                    <input type="text" readonly class="form-control-plaintext" id="team_size" name="team_size" value="{{ tournament.team_size }}">
+                    <input type="text" class="form-control" id="team_size" name="team_size" value="{{ tournament.team_size }}" readonly>
                     {% endif %}
                 </div>
             </div>
             <div class="form-group row">
-                <div class="offset-2 col-4">
+                <div class="offset-4 offset-lg-2 col-8 col-lg-4">
                     <a href="{{ url_for('views.tournaments') }}" class="btn btn-secondary"><i class="fas fa-angle-left"></i> Back</a>
                     <button type="submit" class="btn btn-success">Save</button>
                     {% if tournament.id != "" %}

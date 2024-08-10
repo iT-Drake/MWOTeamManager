@@ -1,6 +1,7 @@
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
 [![MIT License][license-shield]][license-url]
+[![][version-shield]][version-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -8,7 +9,7 @@
   <a href="https://github.com/iT-Drake/MWOTeamManager">
     <img src="doc/images/Logo.png" alt="Logo" width="80" height="80">
   </a>
-  <h3 align="center">MWO Team Manager v0.1</h3>
+  <h3 align="center">MWO Team Manager</h3>
   <p align="center">
     A web application that you need to manage your competitive MWO team.
   </p>
@@ -25,7 +26,7 @@
 - [Usage](#usage)
   - [Environment variables](#environment-variables)
   - [First launch](#first-launch)
-- [Planned improvements](#planned-improvements)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 </details>
@@ -55,7 +56,10 @@ It helps you:
 
 ### Prerequisites
 
-You need your own server accessible to the team with Git and Python3 pre-installed. You can run the web app on your own PC and share designed dropdecks with teammates, but that is much less useful.
+Project tested on Windows 10 and Ubuntu 22.04.
+You need a dedicated server to run it either rented one or the one at home with static IP that is always on.
+Preinstall Git and Python3.10.
+It could be used in offline mode for testing purposes, but it will require manual management of each user's settings and mechlists.
 
 ### Deployment
 
@@ -79,6 +83,26 @@ For a Linux-based system:
   Take a look [here](/doc/Waitress.md) on how to run server as a daemon.
 - Run your browser, enter server address and specified port and test the application.
 
+For a Windows-based systems:
+- Make a folder for the project
+- Use CMD or Powershell to run following commands:
+  ```
+  git init
+  git clone https://github.com/iT-Drake/MWOTeamManager.git
+  ```
+- Create virtual environment with Python, activate it and install dependencies:
+  ```
+  python -m venv .venv
+  .venv\bin\activate.bat
+  .venv\bin\pip install -r requirements.txt
+  ```
+- Run [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/) - Python WSGI server (comes with dependencies):
+  ```
+  waitress-serve --port <specify your port number> --call website:create_app
+  ```
+
+Start your browser, navigate the server address (don't forget the port specified) and test the application.
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
@@ -97,7 +121,7 @@ Web application is using a list of environmental variables:
 - `MECH_DATA` - file name that contains data for all existing mechs, comes with the project `website/data/mechdata.csv`;
 - `MAP_DATA` - file name that contains data for all existing maps, comes with the project `website/data/mapdata.csv`;
 
-Easiest way to manage enviromental variables is to create `.env` file in project folder (notice the dot in front of the name) and fill it like this:
+Easiest way to manage enviromental variables is to create `.env` file in a project folder (notice the dot in front of the name) and fill it like this:
 ```shell
 SECRET_KEY=your-really-random-secret-key
 DB_NAME=database.sqlite3
@@ -111,7 +135,7 @@ SQL_PASSWORD=
 ### First launch
 
 <details>
-  <summary>Introduction to the application. Images and a lot of text inside.</summary>
+  <summary>Introduction to the application (beware of images and a lot of text inside).</summary>
 
 Open web app page in your browser. Log in with existing admin user or register a new one:
 
@@ -121,48 +145,77 @@ In-game-name will be used to represent user in dropdecks and mechlists.
 
 After successful login press the button in top right corner of the screen and open your user profile:
 
-![Login](/doc/images/Profile.png)
+![Profile](/doc/images/Profile.png)
 
 Here you can change your password if needed and specify a time zone in which events time will be displayed.
 
-On the leftside menu you can find `Mechlists\Update` section. You can copy-paste there text from [MWO Profile](https://mwomercs.com/profile) page. It will be automatically parsed and your mechlist will be updated.
+On the leftside menu you can find `Mechlists\Update` section. You can add mechs manually one by one or paste the content of [MWO Profile](https://mwomercs.com/profile) page. It will be automatically parsed and your mechlist will be updated.
 
-![Login](/doc/images/Mechlist.png)
+![Mechlist](/doc/images/Mechlist.png)
 
-Take a note that search field above the table let you enter a multiple column prompt like: "CLAN HERO 65 OMNI". It will search for every space-separated word in each column.
+> [!NOTE]
+> Search field let you enter a multi-column prompt like: "CLAN HERO 65 OMNI". It will search for every space-separated word in each column.
 
-Create a tournament that your team is taking part in (it shouldn't be an official one, may be just "Summer scrims"). `Add` button will open a page for a new tournament.
+Create a tournament that your team is taking part in (it shouldn't be an official one, may be just "Summer scrims").
+`Add` button will open a page for a new tournament.
 
-![Login](/doc/images/Tournaments.png)
+![Tournaments](/doc/images/Tournaments.png)
 
 Add event in the same manner for existing tournament.
 
-![Login](/doc/images/Events.png)
+![Events](/doc/images/Events.png)
 
-In the builds section you have filter buttons that can help you find the build you want. Take a note that only approved builds can be selected on dropdeck design page (marked with green).
+In the builds section you have filter buttons that can help you find the build you want.
+> [!NOTE]
+> Only builds with "Approved" flag can be selected on dropdeck design page (marked with green).
 
-![Login](/doc/images/Builds.png)
+![Builds](/doc/images/Builds.png)
 
-Now you are ready to make dropdecks. Application will message you if you left blank a field that is required to save data. Like event for a dropdeck, for example.
+Now you are ready to make dropdecks.
 
-![Login](/doc/images/Dropdeck.png)
+![Dropdeck](/doc/images/Dropdeck.png)
 
-After you finallized your dropdecks, they will appear on event view page and you can send a link to your teammates.
+> [!TIP]
+> You'll get a browser notification if you didn't fill required fields when trying to save the changes.
 
-![Login](/doc/images/EventView.png)
+Finalizing a dropdeck means that you can no longer change event it will be used for and it will appear on event view page.
 
-On event view page you can check if you managed to spread pilots between drops evenly, mech used not over tournament limit. Each pilot can filter dropdecks to see only the mechs that they playing. Build code could be copied to a clipboard and a link to MechDB opened in a separate tab.
+![EventView](/doc/images/EventView.png)
+
+On event view page you can check if you managed to spread pilots between drops evenly, used mechs do not exceed tournament limit. Each pilot can filter dropdecks to see only the mechs that they're playing. Build code could be copied to a clipboard and a link to MechDB opens in a separate tab.
+
+If your team is working with fill-in players for events, it may be handful to provide them a link with dropdecks which contain mechs and builds you expect them to bring.
+"Share" button will let you generate an external link that you can share with users that don't have team member role. These links have a lifespan of 7 days and can be deleted from event list page.
+
+![Users](/doc/images/Users.png)
+
+Application supports three level of user roles:
+- User - have access only to profile and mechlist update page;
+- Team member - have access to most of the content;
+- Admin - have access to admin panel that let you control user roles (this level is assigned to default admin user).
 
 </details>
 
-<!-- Planned improvements -->
-## Planned improvements
+<!-- Roadmap -->
+## Roadmap
 
-1. Panel for admin user to update the list of maps and mechs with recent ones added by PGI.
-2. Event attendance system for pilots and calendar view for events.
-3. Pilot preferences system (small or big mechs, long or short range weapons etc.) and build tags to make it easier to match pilot preferences while designing dropdecks.
-4. Ability to copy dropdecks from previous events to a current one.
-5. Automatic parser for MechDB links that will extract weapons, engine and other stats.
+v0.3:
+- Admin panel for new mechs and maps;
+- MechDB parser that will allow to select, copy and paste mech stats to store them inside web-application to compare builds without opening MechDB;
+
+  ![MechDB](/doc/images/MechDB.png)
+- Match ID's parser and pilot statistics.
+
+v0.4:
+- Calendar event view;
+- Pilot preferences system that will let them rank different categories (short range, long range, dakka, laservomit, masc mechs, etc.);
+- Build tags using the same categories;
+- Color the loadout field on dropdeck edit page depending on how well selected build matches the pilot preferences.
+
+v0.9:
+- Redesign of the application to be a community service;
+- Multiple teams on the same server and team data separation;
+- Optimization of database calls and addition of caching mechanisms.
 
 <!-- LICENSE -->
 ## License
@@ -176,6 +229,9 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 
 [license-shield]: https://img.shields.io/github/license/iT-Drake/MWOTeamManager.svg?style=for-the-badge
 [license-url]: https://github.com/iT-Drake/MWOTeamManager/blob/main/LICENSE
+
+[version-shield]: https://img.shields.io/badge/Version-0.2-blue?style=for-the-badge
+[version-url]: https://github.com/iT-Drake/MWOTeamManager
 
 [Python]: https://img.shields.io/badge/Python-blue?style=for-the-badge&logo=Python&logoColor=white
 [python-url]: https://www.python.org

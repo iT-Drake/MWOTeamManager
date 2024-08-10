@@ -7,9 +7,11 @@ from os import path, getenv
 from dotenv import load_dotenv
 
 from .utility import UTC
+from .roles import Role
 
 db = SQLAlchemy()
 migrate = Migrate()
+version = 'ce4e0697f426'
 
 load_dotenv()
 SECRET_KEY = getenv("SECRET_KEY")
@@ -24,7 +26,7 @@ def create_admin_user():
     from .models import User
     from werkzeug.security import generate_password_hash
 
-    new_user = User(name=DEFAULT_USER, in_game_name=DEFAULT_USER, timezone=UTC(), password=generate_password_hash(DEFAULT_USER), admin=True)
+    new_user = User(name=DEFAULT_USER, in_game_name=DEFAULT_USER, timezone=UTC(), password=generate_password_hash(DEFAULT_USER), admin=True, role=Role.Admin.value)
     db.session.add(new_user)
     db.session.commit()
 
@@ -50,6 +52,12 @@ def initialize_maps_table():
         db.session.add(map)
     db.session.commit()
 
+def initialize_database_version():
+    from sqlalchemy import text
+    db.session.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL PRIMARY KEY)"))
+    db.session.execute(text("INSERT INTO alembic_version (version_num) VALUES (:version)"), {"version": version})
+    db.session.commit()
+
 def create_database(app):
     if not path.exists('instance/' + DB_NAME):
         with app.app_context():
@@ -57,6 +65,7 @@ def create_database(app):
             create_admin_user()
             initialize_mechs_table()
             initialize_maps_table()
+            initialize_database_version()
         print('Database created!')
 
 def create_app():
