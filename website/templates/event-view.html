@@ -4,7 +4,7 @@
 {% endblock %}
 {% block ContentHeader %}
     <span>{{ data.event }}</span>
-    <button type="button" class="btn btn-outline-success float-right" id="share_button">Share<i class="fas fa-share-alt pl-2"></i></button>
+    <button type="button" class="btn btn-outline-success float-right" id="share_button" data-url="">Share<i class="fas fa-share-alt pl-2"></i></button>
 {% endblock %}
 {% block ContentHeaderAddition %}
     <div class="form-group row">
@@ -192,34 +192,35 @@
             });
 
             $('#share_button').on('click', function() {
+                var button = $(this);
+                const url = button.data('url');
                 const eventId = '{{ data.event_id }}';
                 const baseUrl = '{{ url_for("views.event_share") }}';
 
-                $.ajax({
-                    url: baseUrl,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        event_id: eventId
-                    }),
-                    success: function(response) {
-                        if (response.success) {
-                            const url = window.location.protocol + '//' + window.location.host + '{{ url_for("views.shared_event", url="") }}' + response.url;
-                            navigator.clipboard.writeText(url)
-                                .then(() => {
-                                    toastSuccess('Event shared', 'Event link copied to your clipboard.');
-                                })
-                                .catch(err => {
-                                    toastError('Failed to copy text to clipboard', err);
-                                });
-                        } else {
-                            toastError('Error', response.message);
+                if (!url) {
+                    $.ajax({
+                        url: baseUrl,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            event_id: eventId
+                        }),
+                        success: function(response) {
+                            if (response.success) {
+                                const url = window.location.protocol + '//' + window.location.host + '{{ url_for("views.shared_event", url="") }}' + response.url;
+                                button.data('url', url);
+                                toastWarning('Processing', 'Generating the link, press the button again.');
+                            } else {
+                                toastError('Error', response.message);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            toastError('Error performing AJAX request', errorThrown);
                         }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        toastError('Error performing AJAX request', errorThrown);
-                    }
-                });
+                    });
+                } else {
+                    copyToClipboard(url, 'Event shared', 'Event link copied to your clipboard.');
+                }
             });
         });
     </script>
