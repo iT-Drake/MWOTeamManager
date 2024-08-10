@@ -55,6 +55,9 @@
   <!-- Easy Toasts -->
   <script src="{{ url_for('static', filename='adminlte/js/toast.js') }}"></script>
 
+  <!-- Clipboard utility -->
+  <script src="{{ url_for('static', filename='adminlte/js/clipboard.js') }}"></script>
+
   <!-- Page specific script -->
   <script>
     $(function () {
@@ -92,26 +95,25 @@
 
               var text = [];
               var divider = '\t';
-              var header = '';
+              var items = []
               for (const pilot in pilots) {
-                header += pilot + divider;
+                items.push(pilot);
               }
+              var header = items.join(divider);
               text.push(header);
 
               for (let i = 0; i < tableSize; i++) {
                 var items = [];
                 for (const pilot in pilots) {
                   var mechs = pilots[pilot];
-                  var mechName = i >= mechs.length ? '' : mechs[i].trim();
-                  items.push(mechName + '\t');
+                  var mechName = (i >= mechs.length) ? '' : mechs[i].trim();
+                  items.push(mechName);
                 }
-                text.push(items.join(''));
+                text.push(items.join(divider));
               }
 
               var textToCopy = text.join('\n');
-
-              navigator.clipboard.writeText(textToCopy);
-              toastSuccess('Data copied', 'Mechlists copied to a clipboard!');
+              copyToClipboard(textToCopy, 'Data copied', 'Mechlists copied to a clipboard.');
             }
           }, "csv", "excel"]
       }).buttons().container().appendTo('#mechs_wrapper .col-md-6:eq(0)');
