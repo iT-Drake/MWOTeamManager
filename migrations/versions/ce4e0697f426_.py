@@ -22,6 +22,7 @@ def upgrade():
         batch_op.add_column(sa.Column('author_id', sa.Integer(), nullable=True))
         batch_op.create_foreign_key('author_id', 'users', ['author_id'], ['id'])
 
+    with op.batch_alter_table('builds', schema=None) as batch_op:
         op.execute('UPDATE builds SET author_id = 1')
 
     # ### end Alembic commands ###
