@@ -98,7 +98,7 @@
   <!-- Page specific scripts -->
   <script>
     $(function () {
-      $("#builds").DataTable({
+      var builds = $("#builds").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 100,
         "columnDefs": [{ orderable: false, targets: [6, 7, 8, 11] }],
         "order": [[1, 'asc'], [3, 'asc'], [4, 'asc']],
@@ -112,6 +112,20 @@
           }
         ]
       }).buttons().container().appendTo('#builds_wrapper .col-md-6:eq(0)');
+
+      var searchWrapper = $('#builds_filter');
+      var searchInput = searchWrapper.find('input');
+      
+      searchInput.on('keyup', function() {
+        var searchTerm = this.value;
+        var url = new URL(window.location.href);
+
+        // Update the URL search parameter
+        url.searchParams.set('search', searchTerm);
+
+        // Update the browser's address bar
+        window.history.replaceState(null, null, url.href);
+      });
     });
   </script>
   <script>
@@ -181,5 +195,20 @@
     function copyCode(element) {
       copyCodeToClipboard(element);
     }
+  </script>
+  <script>
+    $(document).ready(function() {
+      var searchWrapper = $('#builds_filter');
+      var searchInput = searchWrapper.find('input');
+
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('search')) {
+        var searchTerm = urlParams.get('search');
+        searchInput.val(searchTerm);
+        
+        var builds = $("#builds").DataTable();
+        builds.search(searchTerm).draw();
+      }
+    });
   </script>
 {% endblock %}
